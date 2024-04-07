@@ -1,6 +1,6 @@
 ---
 name: Feature
-about: Feature 작업 사항을 입력해주세요.
+about: 기능 개발용 Issue Template 입니다.
 title: ''
 labels: ''
 assignees: ''
