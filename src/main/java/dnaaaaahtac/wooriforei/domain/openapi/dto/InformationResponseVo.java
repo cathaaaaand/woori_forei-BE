@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class InformationResponseVo {
 
     @JsonProperty("list_total_count")
-    int list_total_count;
+    int listTotalCount;
 
     @JsonProperty("row")
     ArrayList<InformationDetailVo> row;
