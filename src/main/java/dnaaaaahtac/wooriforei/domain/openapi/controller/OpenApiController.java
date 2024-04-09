@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/openAPI")
 public class OpenApiController {
 
     private final InformationService informationService;
@@ -22,7 +22,7 @@ public class OpenApiController {
         this.informationService = informationService;
     }
 
-    @GetMapping("/openAPI/information")
+    @GetMapping("/information")
     public Mono<ResponseEntity<InformationResponseWrapper>> information() {
         return informationService.retrieveInformation()
                 .map(response -> ResponseEntity.ok().body(response))
