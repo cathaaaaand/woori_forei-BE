@@ -1,9 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.auth.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
@@ -39,9 +36,10 @@ public class RegisterUserRequestDTO {
 
     private String image;
 
+    @NotNull
     private Boolean isAgreed;
 
-    public void setAgreed(Boolean agreed) {
+    public void setIsAgreed(Boolean agreed) {
         isAgreed = agreed;
     }
 

@@ -13,6 +13,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(400, "이미 사용중인 이메일입니다."),
     NICKNAME_ALREADY_EXISTS(400, "이미 사용중인 닉네임입니다."),
     PASSWORD_CONFIRMATION_FAILED(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+    AGREEMENT_NOT_ACCEPTED(400, "약관에 동의하지 않았습니다."),
 
     // Board
 

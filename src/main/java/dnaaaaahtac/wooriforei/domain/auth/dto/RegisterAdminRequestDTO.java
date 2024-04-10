@@ -2,6 +2,7 @@ package dnaaaaahtac.wooriforei.domain.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
@@ -26,6 +27,9 @@ public class RegisterAdminRequestDTO {
     @NotBlank
     private String secretCode;
 
+    @NotNull
+    private Boolean isAgreed;
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -44,5 +48,9 @@ public class RegisterAdminRequestDTO {
 
     public void setSecretCode(String secretCode) {
         this.secretCode = secretCode;
+    }
+
+    public void setIsAgreed(boolean agreed) {
+        isAgreed = agreed;
     }
 }

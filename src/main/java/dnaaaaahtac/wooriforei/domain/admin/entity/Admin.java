@@ -22,9 +22,6 @@ public class Admin {
     private String checkPassword;
 
     @Column(nullable = false)
-    private boolean isChecked = false;
-
-    @Column(nullable = false)
     private boolean isAgreed = false;
 
     @Column(nullable = false)
@@ -51,10 +48,6 @@ public class Admin {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
     }
 
     public void setAgreed(boolean agreed) {

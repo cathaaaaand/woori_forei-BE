@@ -25,8 +25,8 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${admin_secret_password}")
-    private String adminSecretPassword;
+    @Value("${admin_secret_code}")
+    private String adminSecretCode;
 
     public void registerUser(RegisterUserRequestDTO requestDTO) {
 
@@ -42,6 +42,10 @@ public class AuthService {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         });
 
+        if (Boolean.FALSE.equals(requestDTO.getIsAgreed())) {
+            throw new CustomException(ErrorCode.AGREEMENT_NOT_ACCEPTED);
+        }
+
         User newUser = new User();
         newUser.setUsername(requestDTO.getUsername());
         newUser.setNickname(requestDTO.getNickname());
@@ -50,13 +54,14 @@ public class AuthService {
         newUser.setMbti(requestDTO.getMbti());
         newUser.setBirthday(requestDTO.getBirthday());
         newUser.setNation(requestDTO.getNation());
+        newUser.setAgreed(requestDTO.getIsAgreed());
 
         userRepository.save(newUser);
     }
 
     public void registerAdmin(RegisterAdminRequestDTO requestDTO) {
 
-        if (!adminSecretPassword.equals(requestDTO.getSecretCode())) {
+        if (!adminSecretCode.equals(requestDTO.getSecretCode())) {
             throw new CustomException(ErrorCode.INVALID_SECRET_CODE);
         }
 
@@ -64,10 +69,15 @@ public class AuthService {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         });
 
+        if (Boolean.FALSE.equals(requestDTO.getIsAgreed())) {
+            throw new CustomException(ErrorCode.AGREEMENT_NOT_ACCEPTED);
+        }
+
         Admin newAdmin = new Admin();
         newAdmin.setAdminEmail(requestDTO.getEmail());
         newAdmin.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         newAdmin.setPhone(requestDTO.getPhoneNumber());
+        newAdmin.setAgreed(requestDTO.getIsAgreed());
 
         adminRepository.save(newAdmin);
     }
