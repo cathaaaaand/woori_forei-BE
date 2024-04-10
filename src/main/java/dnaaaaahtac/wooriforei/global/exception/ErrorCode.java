@@ -6,6 +6,10 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // Auth
+    PASSWORD_NOT_MATCH(400, "비밀번호가 일치하지 않습니다."),
+    EMAIL_ALREADY_EXISTS(400, "이미 사용중인 이메일입니다."),
+    NICKNAME_ALREADY_EXISTS(400, "이미 사용중인 닉네임입니다."),
+    PASSWORD_CONFIRMATION_FAILED(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     // Board
 
