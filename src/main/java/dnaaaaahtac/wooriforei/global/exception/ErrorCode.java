@@ -5,6 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 
+    // Admin
+    INVALID_SECRET_CODE(400, "비밀 암호가 올바르지 않습니다."),
+
     // Auth
     PASSWORD_NOT_MATCH(400, "비밀번호가 일치하지 않습니다."),
     EMAIL_ALREADY_EXISTS(400, "이미 사용중인 이메일입니다."),
@@ -31,7 +34,7 @@ public enum ErrorCode {
 
     private final String message;
 
-    ErrorCode(int statusCode, String message){
+    ErrorCode(int statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
