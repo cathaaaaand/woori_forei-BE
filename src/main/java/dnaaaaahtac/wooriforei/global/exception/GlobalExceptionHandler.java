@@ -16,8 +16,8 @@ public class GlobalExceptionHandler {
         log.error(customException.getMessage());
 
         HttpStatus httpStatus = HttpStatus.valueOf(customException.getStatusCode());
-        ErrorResponse errorResponse = ErrorResponse.of(httpStatus, customException.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(customException.getMessage());
 
-        return ResponseEntity.ok().body(errorResponse);
+        return ResponseEntity.status(httpStatus).body(errorResponse);
     }
 }
