@@ -64,7 +64,7 @@ public class SeoulGoodsService {
 
         // 정보를 찾을 수 없는 경우 예외 발생
         if (SeoulgoodsOptional.isEmpty()) {
-            return Mono.error(new CustomException(ErrorCode.NOT_FOUND_EXCEPTION));
+            return Mono.error(new CustomException(ErrorCode.NOT_FOUND_DATA));
         }
 
         return Mono.justOrEmpty(SeoulgoodsOptional);
