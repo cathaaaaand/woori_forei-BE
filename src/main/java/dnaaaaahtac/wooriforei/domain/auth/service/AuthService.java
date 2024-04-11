@@ -2,28 +2,28 @@ package dnaaaaahtac.wooriforei.domain.auth.service;
 
 import dnaaaaahtac.wooriforei.domain.admin.entity.Admin;
 import dnaaaaahtac.wooriforei.domain.admin.repository.AdminRepository;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginUserResponseDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterAdminRequestDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterUserRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
+import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Value("${admin_secret_code}")
     private String adminSecretCode;
@@ -80,5 +80,26 @@ public class AuthService {
         newAdmin.setAgreed(requestDTO.getIsAgreed());
 
         adminRepository.save(newAdmin);
+    }
+
+    public LoginUserResponseDTO loginUser(LoginRequestDTO requestDTO) {
+
+        User newUser = userRepository.findByUserEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new CustomException((ErrorCode.NOT_FOUND_USER_EXCEPTION)));
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), newUser.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        return LoginUserResponseDTO.builder()
+                .userId(Long.valueOf(newUser.getUserId()))
+                .username(newUser.getUsername())
+                .nickname(newUser.getNickname())
+                .email(newUser.getUserEmail())
+                .introduction(newUser.getIntroduction())
+                .mbti(newUser.getMbti())
+                .birthday(newUser.getBirthday())
+                .nation(newUser.getNation())
+                .build();
     }
 }
