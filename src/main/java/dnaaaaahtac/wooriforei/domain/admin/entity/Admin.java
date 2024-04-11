@@ -12,6 +12,9 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adminId;
 
+    @Column(length = 100, nullable = false)
+    private String adminName;
+
     @Column(length = 200, nullable = false)
     private String adminEmail;
 
@@ -28,7 +31,7 @@ public class Admin {
     private boolean isAuthenticated = false;
 
     @Column(nullable = false)
-    private String phone;
+    private String phoneNumber;
 
     public void setAdminId(Long adminId) {
         this.adminId = adminId;
@@ -46,8 +49,8 @@ public class Admin {
         this.checkPassword = checkPassword;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public void setAgreed(boolean agreed) {
@@ -56,5 +59,9 @@ public class Admin {
 
     public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public void setAdminName(String adminName) {
+        this.adminName = adminName;
     }
 }
