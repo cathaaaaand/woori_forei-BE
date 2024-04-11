@@ -1,4 +1,4 @@
-package dnaaaaahtac.wooriforei.domain.openapi.dto;
+package dnaaaaahtac.wooriforei.domain.openapi.dto.information;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,6 @@ public class InformationResponseVo {
     int listTotalCount;
 
     @JsonProperty("row")
-    ArrayList<InformationDetailVo> row;
+    ArrayList<InformationDetailDto> row;
 
 }
