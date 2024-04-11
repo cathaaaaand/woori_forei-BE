@@ -1,12 +1,17 @@
 package dnaaaaahtac.wooriforei.domain.openapi.controller;
 
 
+import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDto;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDto;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDto;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.SeoulGoods;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
+import dnaaaaahtac.wooriforei.domain.openapi.service.ActivityService;
 import dnaaaaahtac.wooriforei.domain.openapi.service.InformationService;
 import dnaaaaahtac.wooriforei.domain.openapi.service.SeoulGoodsService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +24,13 @@ import java.util.List;
 
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/openAPI")
 public class OpenApiController {
 
     private final InformationService informationService;
     private final SeoulGoodsService seoulGoodsService;
-
-    @Autowired
-    public OpenApiController(InformationService informationService, SeoulGoodsService seoulGoodsService) {
-        this.informationService = informationService;
-        this.seoulGoodsService = seoulGoodsService;
-    }
+    private final ActivityService activityService;
 
     //information 호출
     @GetMapping("/informations")
@@ -65,7 +66,7 @@ public class OpenApiController {
 
     // seoulgoods 전체 조회
     @GetMapping("/seoulgoods/check")
-    public ResponseEntity<List<SeoulGoods>> checkAllseoulGoods() {
+    public ResponseEntity<List<SeoulGoods>> checkAllSeoulGoods() {
 
         List<SeoulGoods> seoulGoods = seoulGoodsService.findAllSeoulGoods();
         return ResponseEntity.ok().body(seoulGoods);
@@ -73,10 +74,33 @@ public class OpenApiController {
 
     // seoulgoods 단건 조회
     @GetMapping("/seoulgoods/{seoulgoodsId}/check")
-    public Mono<ResponseEntity<SeoulGoods>> checkseoulGoodsById(@PathVariable Long seoulgoodsId) {
+    public Mono<ResponseEntity<SeoulGoods>> checkSeoulGoodsById(@PathVariable Long seoulgoodsId) {
 
         return seoulGoodsService.findInSeoulGoodsById(seoulgoodsId)
                 .map(seoulGoods -> ResponseEntity.ok().body(seoulGoods));
     }
 
+    //activity 호출
+    @GetMapping("/activities")
+    public Mono<ResponseEntity<ActivityResponseDto>> activities(){
+
+        return activityService.retrieveActivity()
+                .map(response -> ResponseEntity.ok().body(response));
+    }
+
+    //activity 전체 조회
+    @GetMapping("/activities/check")
+    public ResponseEntity<List<Activity>> checkAllActivities(){
+
+        List<Activity> activities = activityService.findAllActivity();
+        return ResponseEntity.ok().body(activities);
+    }
+
+    //activity 단건 조회
+    @GetMapping("/activities/{activitiesId}/check")
+    public Mono<ResponseEntity<Activity>> checkActivitiesById(@PathVariable Long activitiesId) {
+
+        return activityService.findActivityById(activitiesId)
+                .map(activity -> ResponseEntity.ok().body(activity));
+    }
 }
