@@ -1,5 +1,5 @@
 
-package dnaaaaahtac.wooriforei.domain.openapi.dto;
+package dnaaaaahtac.wooriforei.domain.openapi.dto.information;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InformationDetailVo {
+public class InformationDetailDto {
 
     @JsonProperty("TRSMICNM")
     private String trsmicnm;
@@ -54,7 +54,7 @@ public class InformationDetailVo {
     private String rdnmadr;
 
     @JsonProperty("LNMADR")
-    private String lnmdr;
+    private String lnmadr;
 
     @JsonProperty("HOMEPAGEURL")
     private String homepageurl;

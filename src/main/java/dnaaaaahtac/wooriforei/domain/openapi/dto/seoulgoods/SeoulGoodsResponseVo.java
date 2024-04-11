@@ -1,4 +1,4 @@
-package dnaaaaahtac.wooriforei.domain.openapi.dto;
+package dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,12 +10,12 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InformationResponseVo {
+public class SeoulGoodsResponseVo {
 
     @JsonProperty("list_total_count")
     int listTotalCount;
 
     @JsonProperty("row")
-    ArrayList<InformationDetailVo> row;
+    ArrayList<SeoulGoodsDetailDto> row;
 
 }

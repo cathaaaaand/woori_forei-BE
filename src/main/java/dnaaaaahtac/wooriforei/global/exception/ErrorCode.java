@@ -25,6 +25,9 @@ public enum ErrorCode {
 
     // Scheduler
 
+    //OpenAPI
+    NOT_FOUND_DATA(404,"데이터가 존재하지 않습니다."),
+
     // User
     NOT_FOUND_USER_EXCEPTION(404, "해당 유저가 존재하지 않습니다."),
 
