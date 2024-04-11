@@ -16,6 +16,9 @@ public class RegisterAdminRequestDTO {
     private String email;
 
     @NotBlank
+    private String adminName;
+
+    @NotBlank
     private String password;
 
     @NotBlank
@@ -51,6 +54,14 @@ public class RegisterAdminRequestDTO {
     }
 
     public void setIsAgreed(boolean agreed) {
+        isAgreed = agreed;
+    }
+
+    public void setAdminName(String adminName) {
+        this.adminName = adminName;
+    }
+
+    public void setAgreed(Boolean agreed) {
         isAgreed = agreed;
     }
 }

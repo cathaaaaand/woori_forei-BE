@@ -2,10 +2,7 @@ package dnaaaaahtac.wooriforei.domain.auth.service;
 
 import dnaaaaahtac.wooriforei.domain.admin.entity.Admin;
 import dnaaaaahtac.wooriforei.domain.admin.repository.AdminRepository;
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginUserResponseDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterAdminRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterUserRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.*;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
@@ -75,8 +72,9 @@ public class AuthService {
 
         Admin newAdmin = new Admin();
         newAdmin.setAdminEmail(requestDTO.getEmail());
+        newAdmin.setAdminName(requestDTO.getAdminName());
         newAdmin.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
-        newAdmin.setPhone(requestDTO.getPhoneNumber());
+        newAdmin.setPhoneNumber(requestDTO.getPhoneNumber());
         newAdmin.setAgreed(requestDTO.getIsAgreed());
 
         adminRepository.save(newAdmin);
@@ -100,6 +98,23 @@ public class AuthService {
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())
                 .nation(newUser.getNation())
+                .build();
+    }
+
+    public LoginAdminResponseDTO loginAdmin(LoginRequestDTO requestDTO) {
+
+        Admin newAdmin = adminRepository.findByAdminEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ADMIN));
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), newAdmin.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        return LoginAdminResponseDTO.builder()
+                .adminId(newAdmin.getAdminId())
+                .adminName(newAdmin.getAdminName())
+                .adminEmail(newAdmin.getAdminEmail())
+                .phoneNumber(newAdmin.getPhoneNumber())
                 .build();
     }
 }
