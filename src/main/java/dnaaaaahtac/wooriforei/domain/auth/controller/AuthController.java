@@ -1,9 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.auth.controller;
 
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginUserResponseDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterAdminRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterUserRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.*;
 import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
@@ -58,6 +55,18 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .body(CommonResponse.of("사용자 로그인 성공", loginUserResponseDTO));
+    }
+
+    @PostMapping("/admin-login")
+    public ResponseEntity<CommonResponse<LoginAdminResponseDTO>> adminLogin(
+            @RequestBody @Valid LoginRequestDTO requestDTO, HttpServletResponse response) {
+
+        LoginAdminResponseDTO loginAdminResponseDTO = authService.loginAdmin(requestDTO);
+        String jwtToken = jwtUtil.createToken(loginAdminResponseDTO.getAdminName());
+        response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.of("관리자 로그인 성공", loginAdminResponseDTO));
     }
 
 }
