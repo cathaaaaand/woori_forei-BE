@@ -14,6 +14,7 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(400, "이미 사용중인 닉네임입니다."),
     PASSWORD_CONFIRMATION_FAILED(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     AGREEMENT_NOT_ACCEPTED(400, "약관에 동의하지 않았습니다."),
+    INVALID_PASSWORD(401, "이메일 또는 비밀번호가 유효하지 않습니다."),
 
     // Board
 
