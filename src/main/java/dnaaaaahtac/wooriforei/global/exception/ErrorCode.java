@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(401, "이메일 또는 비밀번호가 유효하지 않습니다."),
 
     // Board
+    NOT_FOUND_EXCEPTION(404,"게시물이 존재하지 않습니다."),
 
     // Comment
 
