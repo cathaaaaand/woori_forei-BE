@@ -1,15 +1,11 @@
 package dnaaaaahtac.wooriforei.domain.openapi.dto.information;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class InformationResponseVo {
 
     @JsonProperty("list_total_count")
