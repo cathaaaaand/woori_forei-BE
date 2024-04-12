@@ -1,8 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.openapi.service;
 
-import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityDetailDto;
-import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDto;
-import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDto;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityDetailDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
@@ -44,7 +43,7 @@ public class ActivityService {
         this.activityRepository = activityRepository;
     }
 
-    public Mono<ActivityResponseDto> retrieveActivity() {
+    public Mono<ActivityResponseDTO> retrieveActivity() {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -52,7 +51,7 @@ public class ActivityService {
                         .build(authKey, "json", "ListPublicReservationCulture", 1, 999))
                 .header("Content-type", "application/json")
                 .retrieve()
-                .bodyToMono(ActivityResponseDto.class)
+                .bodyToMono(ActivityResponseDTO.class)
                 .doOnSuccess(response -> {
                     System.out.println("Successfully retrieved data");
                     saveActivityDetails(response);
@@ -79,19 +78,19 @@ public class ActivityService {
         return Mono.justOrEmpty(activityOptional);
     }
 
-    private void saveActivityDetails(ActivityResponseDto wrapper) {
+    private void saveActivityDetails(ActivityResponseDTO wrapper) {
 
         wrapper.getListPublicReservationCulture().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(ActivityDetailDto detail) {
+    private void convertAndSave(ActivityDetailDTO detail) {
 
         activityRepository.findBySvcid(detail.getSvcid())
                 .ifPresentOrElse(existingAct -> updateExistingActivity(existingAct, detail),
                         () -> activityRepository.save(mapToEntity(new Activity(), detail)));
     }
 
-    private Activity mapToEntity(Activity activity, ActivityDetailDto detail) {
+    private Activity mapToEntity(Activity activity, ActivityDetailDTO detail) {
         // DTO -> Entity 매핑
         activity.setSvcid(detail.getSvcid());
         activity.setMinclassnm(detail.getMinclassnm());
@@ -116,7 +115,7 @@ public class ActivityService {
         return activity;
     }
 
-    private void updateExistingActivity(Activity existingAct, ActivityDetailDto detail) {
+    private void updateExistingActivity(Activity existingAct, ActivityDetailDTO detail) {
         boolean updated = false;
 
         if (notEqual(existingAct.getSvcid(), detail.getSvcid())) {

@@ -1,9 +1,8 @@
 package dnaaaaahtac.wooriforei.domain.openapi.service;
 
-import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsDetailDto;
-import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDto;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsDetailDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.SeoulGoods;
-import dnaaaaahtac.wooriforei.domain.openapi.repository.InformationRepository;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.SeoulGoodsRepository;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
@@ -34,7 +33,7 @@ public class SeoulGoodsService {
         this.seoulGoodsRepository = seoulGoodsRepository;
     }
 
-    public Mono<SeoulGoodsResponseDto> retrieveSeoulGoods() {
+    public Mono<SeoulGoodsResponseDTO> retrieveSeoulGoods() {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -42,7 +41,7 @@ public class SeoulGoodsService {
                         .build(authKey, "json", "frgnrTourGiftShopInfo", 1, 999))
                 .header("Content-type", "application/json")
                 .retrieve()
-                .bodyToMono(SeoulGoodsResponseDto.class)
+                .bodyToMono(SeoulGoodsResponseDTO.class)
                 .doOnSuccess(response -> {
                     System.out.println("Successfully retrieved data");
                     saveSeoulGoodsDetails(response);
@@ -70,19 +69,19 @@ public class SeoulGoodsService {
         return Mono.justOrEmpty(SeoulgoodsOptional);
     }
 
-    private void saveSeoulGoodsDetails(SeoulGoodsResponseDto seoulgoodsResponseDto) {
+    private void saveSeoulGoodsDetails(SeoulGoodsResponseDTO seoulgoodsResponseDto) {
 
         seoulgoodsResponseDto.getFrgnrtourgiftshopinfo().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(SeoulGoodsDetailDto detail) {
+    private void convertAndSave(SeoulGoodsDetailDTO detail) {
 
         seoulGoodsRepository.findByNmAndTel(detail.getNm(), detail.getTel())
                 .ifPresentOrElse(existingGoods -> updateExistingSeoulGoods(existingGoods, detail),
                         () -> seoulGoodsRepository.save(mapToEntity(new SeoulGoods(), detail)));
     }
 
-    private SeoulGoods mapToEntity(SeoulGoods seoulGoods, SeoulGoodsDetailDto detail) {
+    private SeoulGoods mapToEntity(SeoulGoods seoulGoods, SeoulGoodsDetailDTO detail) {
         // DTO -> Entity 매핑
         seoulGoods.setNm(detail.getNm());
         seoulGoods.setAddr(detail.getAddr());
@@ -98,7 +97,7 @@ public class SeoulGoodsService {
         return seoulGoods;
     }
 
-    private void updateExistingSeoulGoods(SeoulGoods existingGoods, SeoulGoodsDetailDto detail) {
+    private void updateExistingSeoulGoods(SeoulGoods existingGoods, SeoulGoodsDetailDTO detail) {
         boolean updated = false;
 
         if (notEqual(existingGoods.getNm(), detail.getNm())) {
