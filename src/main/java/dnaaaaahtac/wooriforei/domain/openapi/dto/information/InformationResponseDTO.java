@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class InformationResponseDto {
+public class InformationResponseDTO {
 
     @JsonProperty("TbTourInformation")
-    private InformationResponseVo tbTourInformation;
+    private InformationResponseVO tbTourInformation;
 }

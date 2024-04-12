@@ -1,4 +1,4 @@
-package dnaaaaahtac.wooriforei.domain.openapi.dto.activity;
+package dnaaaaahtac.wooriforei.domain.openapi.dto.information;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -6,12 +6,12 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 @Getter
-public class ActivityResponseVo {
+public class InformationResponseVO {
 
     @JsonProperty("list_total_count")
-    String listTotalCount;
+    int listTotalCount;
 
     @JsonProperty("row")
-    ArrayList<ActivityDetailDto> row;
+    ArrayList<InformationDetailDTO> row;
 
 }

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class ActivityResponseDto {
+public class ActivityResponseDTO {
 
     @JsonProperty("ListPublicReservationCulture")
-    ActivityResponseVo listPublicReservationCulture;
+    ActivityResponseVO listPublicReservationCulture;
 
 }

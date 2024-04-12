@@ -6,12 +6,12 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 @Getter
-public class SeoulGoodsResponseVo {
+public class SeoulGoodsResponseVO {
 
     @JsonProperty("list_total_count")
     int listTotalCount;
 
     @JsonProperty("row")
-    ArrayList<SeoulGoodsDetailDto> row;
+    ArrayList<SeoulGoodsDetailDTO> row;
 
 }

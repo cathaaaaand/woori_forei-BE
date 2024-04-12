@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class ActivityDetailDto {
+public class ActivityDetailDTO {
 
     @JsonProperty("SVCID")
     String svcid;
