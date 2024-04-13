@@ -9,6 +9,7 @@ import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -49,7 +50,6 @@ public class InformationService {
                 .doOnError(e -> System.out.println("Error: " + e.getMessage()));
     }
 
-
     // 전체 조회
     public List<Information> findAllInformations() {
 
@@ -69,12 +69,14 @@ public class InformationService {
         return Mono.justOrEmpty(informationOptional);
     }
 
-    private void saveInformationDetails(InformationResponseDTO wrapper) {
+    @Transactional
+    public void saveInformationDetails(InformationResponseDTO wrapper) {
 
         wrapper.getTbTourInformation().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(InformationDetailDTO detail) {
+    @Transactional
+    public void convertAndSave(InformationDetailDTO detail) {
 
         informationRepository.findByTrsmicnmAndSigngunm(detail.getTrsmicnm(), detail.getSigngunm())
                 .ifPresentOrElse(existingInfo -> updateExistingInformation(existingInfo, detail),

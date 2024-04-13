@@ -9,6 +9,7 @@ import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -69,12 +70,14 @@ public class SeoulGoodsService {
         return Mono.justOrEmpty(SeoulgoodsOptional);
     }
 
-    private void saveSeoulGoodsDetails(SeoulGoodsResponseDTO seoulgoodsResponseDto) {
+    @Transactional
+    public void saveSeoulGoodsDetails(SeoulGoodsResponseDTO seoulgoodsResponseDto) {
 
-        seoulgoodsResponseDto.getFrgnrtourgiftshopinfo().getRow().forEach(this::convertAndSave);
+        seoulgoodsResponseDto.getFrgnrTourGiftShopInfo().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(SeoulGoodsDetailDTO detail) {
+    @Transactional
+    public void convertAndSave(SeoulGoodsDetailDTO detail) {
 
         seoulGoodsRepository.findByNmAndTel(detail.getNm(), detail.getTel())
                 .ifPresentOrElse(existingGoods -> updateExistingSeoulGoods(existingGoods, detail),
