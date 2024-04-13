@@ -1,14 +1,12 @@
 package dnaaaaahtac.wooriforei.domain.user.controller;
 
 import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileResponseDTO;
+import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.service.UserService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +23,15 @@ public class UserController {
 
         return ResponseEntity.ok()
                 .body(CommonResponse.of("프로필 조회 성공", userProfileResponseDTO));
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<CommonResponse<Void>> updateUserProfile(
+            @PathVariable Long userId,
+            @RequestBody UserProfileUpdateRequestDTO userProfileUpdateRequestDTO) {
+
+        userService.updateUserProfile(userId, userProfileUpdateRequestDTO);
+
+        return ResponseEntity.ok(CommonResponse.of("프로필 수정 성공", null));
     }
 }
