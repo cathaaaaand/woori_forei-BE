@@ -1,5 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.user.controller;
 
+import dnaaaaahtac.wooriforei.domain.user.dto.PasswordUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileResponseDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.service.UserService;
@@ -33,5 +34,15 @@ public class UserController {
         userService.updateUserProfile(userId, userProfileUpdateRequestDTO);
 
         return ResponseEntity.ok(CommonResponse.of("프로필 수정 성공", null));
+    }
+
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<CommonResponse<Void>> updatePassword(
+            @PathVariable Long userId,
+            @RequestBody PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
+
+        userService.updatePassword(userId, passwordUpdateRequestDTO);
+
+        return ResponseEntity.ok(CommonResponse.of("비밀번호 수정 성공", null));
     }
 }

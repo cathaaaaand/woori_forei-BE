@@ -1,5 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.user.service;
 
+import dnaaaaahtac.wooriforei.domain.user.dto.PasswordUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileResponseDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
@@ -8,6 +9,7 @@ import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserProfileResponseDTO getUserProfile(Long userId) {
 
@@ -52,6 +55,24 @@ public class UserService {
         newUser.setNation(profileUpdate.getNation());
         newUser.setImage(profileUpdate.getImage());
 
+        userRepository.save(newUser);
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
+
+        User newUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!passwordEncoder.matches(passwordUpdateRequestDTO.getPassword(), newUser.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_USER_PASSWORD);
+        }
+
+        if (!passwordUpdateRequestDTO.getUpdatePassword().equals(passwordUpdateRequestDTO.getCheckUpdatePassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_CONFIRMATION_FAILED);
+        }
+
+        newUser.setPassword(passwordEncoder.encode(passwordUpdateRequestDTO.getUpdatePassword()));
         userRepository.save(newUser);
     }
 }
