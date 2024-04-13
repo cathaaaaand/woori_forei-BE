@@ -1,8 +1,8 @@
 package dnaaaaahtac.wooriforei.domain.auth.service;
 
-import dnaaaaahtac.wooriforei.domain.admin.entity.Admin;
-import dnaaaaahtac.wooriforei.domain.admin.repository.AdminRepository;
-import dnaaaaahtac.wooriforei.domain.auth.dto.*;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginResponseDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
@@ -18,103 +18,75 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Value("${admin_secret_code}")
     private String adminSecretCode;
 
-    public void registerUser(RegisterUserRequestDTO requestDTO) {
+    public void register(RegisterRequestDTO registerRequestDTO) {
 
-        if (!requestDTO.getPassword().equals(requestDTO.getCheckPassword())) {
+        if (!registerRequestDTO.getPassword().equals(registerRequestDTO.getCheckPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_CONFIRMATION_FAILED);
         }
 
-        userRepository.findByUserEmail(requestDTO.getEmail()).ifPresent(user -> {
+        userRepository.findByEmail(registerRequestDTO.getEmail()).ifPresent(user -> {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         });
 
-        userRepository.findByNickname(requestDTO.getNickname()).ifPresent(user -> {
+        userRepository.findByNickname(registerRequestDTO.getNickname()).ifPresent(user -> {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         });
 
-        if (Boolean.FALSE.equals(requestDTO.getIsAgreed())) {
+        if (Boolean.FALSE.equals(registerRequestDTO.getIsAgreed())) {
             throw new CustomException(ErrorCode.AGREEMENT_NOT_ACCEPTED);
         }
 
+        if (registerRequestDTO.getSecretCode() != null) {
+            if (adminSecretCode.equals(registerRequestDTO.getSecretCode())) {
+                registerRequestDTO.setAdmin(true);
+            } else {
+                throw new CustomException(ErrorCode.INVALID_SECRET_CODE);
+            }
+        }
+
         User newUser = new User();
-        newUser.setUsername(requestDTO.getUsername());
-        newUser.setNickname(requestDTO.getNickname());
-        newUser.setUserEmail(requestDTO.getEmail());
-        newUser.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
-        newUser.setMbti(requestDTO.getMbti());
-        newUser.setBirthday(requestDTO.getBirthday());
-        newUser.setNation(requestDTO.getNation());
-        newUser.setAgreed(requestDTO.getIsAgreed());
+        newUser.setUsername(registerRequestDTO.getUsername());
+        newUser.setNickname(registerRequestDTO.getNickname());
+        newUser.setEmail(registerRequestDTO.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        newUser.setMbti(registerRequestDTO.getMbti());
+        newUser.setBirthday(registerRequestDTO.getBirthday());
+        newUser.setNation(registerRequestDTO.getNation());
+        newUser.setAgreed(registerRequestDTO.getIsAgreed());
+        newUser.setAdmin(registerRequestDTO.getIsAdmin());
 
         userRepository.save(newUser);
     }
 
-    public void registerAdmin(RegisterAdminRequestDTO requestDTO) {
+    public LoginResponseDTO login(LoginRequestDTO requestDTO) {
 
-        if (!adminSecretCode.equals(requestDTO.getSecretCode())) {
-            throw new CustomException(ErrorCode.INVALID_SECRET_CODE);
-        }
-
-        adminRepository.findByAdminEmail(requestDTO.getEmail()).ifPresent(user -> {
-            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        });
-
-        if (Boolean.FALSE.equals(requestDTO.getIsAgreed())) {
-            throw new CustomException(ErrorCode.AGREEMENT_NOT_ACCEPTED);
-        }
-
-        Admin newAdmin = new Admin();
-        newAdmin.setAdminEmail(requestDTO.getEmail());
-        newAdmin.setAdminName(requestDTO.getAdminName());
-        newAdmin.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
-        newAdmin.setPhoneNumber(requestDTO.getPhoneNumber());
-        newAdmin.setAgreed(requestDTO.getIsAgreed());
-
-        adminRepository.save(newAdmin);
-    }
-
-    public LoginUserResponseDTO loginUser(LoginRequestDTO requestDTO) {
-
-        User newUser = userRepository.findByUserEmail(requestDTO.getEmail())
+        User newUser = userRepository.findByEmail(requestDTO.getEmail())
                 .orElseThrow(() -> new CustomException((ErrorCode.NOT_FOUND_USER_EXCEPTION)));
 
         if (!passwordEncoder.matches(requestDTO.getPassword(), newUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        return LoginUserResponseDTO.builder()
+        return LoginResponseDTO.builder()
                 .userId(Long.valueOf(newUser.getUserId()))
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
-                .email(newUser.getUserEmail())
+                .email(newUser.getEmail())
+                .phoneNumber(newUser.getPhoneNumber())
                 .introduction(newUser.getIntroduction())
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())
                 .nation(newUser.getNation())
-                .build();
-    }
-
-    public LoginAdminResponseDTO loginAdmin(LoginRequestDTO requestDTO) {
-
-        Admin newAdmin = adminRepository.findByAdminEmail(requestDTO.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ADMIN));
-
-        if (!passwordEncoder.matches(requestDTO.getPassword(), newAdmin.getPassword())) {
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        }
-
-        return LoginAdminResponseDTO.builder()
-                .adminId(newAdmin.getAdminId())
-                .adminName(newAdmin.getAdminName())
-                .adminEmail(newAdmin.getAdminEmail())
-                .phoneNumber(newAdmin.getPhoneNumber())
+                .image(newUser.getImage())
+                .isAdmin(newUser.getIsAdmin())
+                .isAuthenticated(newUser.getIsAuthenticated())
+                .isAgreed(newUser.getIsAgreed())
                 .build();
     }
 }

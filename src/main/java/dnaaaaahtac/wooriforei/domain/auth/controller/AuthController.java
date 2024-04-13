@@ -1,6 +1,8 @@
 package dnaaaaahtac.wooriforei.domain.auth.controller;
 
-import dnaaaaahtac.wooriforei.domain.auth.dto.*;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.LoginResponseDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterRequestDTO;
 import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
@@ -10,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,50 +24,27 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse<Void>> registerUser(
-            @RequestBody @Valid RegisterUserRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Void>> register(
+            @RequestBody @Valid RegisterRequestDTO registerRequestDTO) {
 
-        authService.registerUser(requestDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonResponse.of("사용자 회원가입 성공", null));
-    }
-
-    @PostMapping("/admin-signup")
-    public ResponseEntity<CommonResponse<Void>> registerAdmin(
-            @RequestBody RegisterAdminRequestDTO requestDTO) {
-
-        authService.registerAdmin(requestDTO);
+        authService.register(registerRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonResponse.of("관리자 회원가입 성공", null));
+                .body(CommonResponse.of("회원가입 성공", null));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginUserResponseDTO>> login(
+    public ResponseEntity<CommonResponse<LoginResponseDTO>> login(
             @RequestBody @Valid LoginRequestDTO requestDTO, HttpServletResponse response) {
 
-        LoginUserResponseDTO loginUserResponseDTO = authService.loginUser(requestDTO);
-        String jwtToken = jwtUtil.createToken(loginUserResponseDTO.getUsername());
+        LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
+        String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString());
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
 
         return ResponseEntity.ok()
-                .body(CommonResponse.of("사용자 로그인 성공", loginUserResponseDTO));
-    }
-
-    @PostMapping("/admin-login")
-    public ResponseEntity<CommonResponse<LoginAdminResponseDTO>> adminLogin(
-            @RequestBody @Valid LoginRequestDTO requestDTO, HttpServletResponse response) {
-
-        LoginAdminResponseDTO loginAdminResponseDTO = authService.loginAdmin(requestDTO);
-        String jwtToken = jwtUtil.createToken(loginAdminResponseDTO.getAdminName());
-        response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
-
-        return ResponseEntity.ok()
-                .body(CommonResponse.of("관리자 로그인 성공", loginAdminResponseDTO));
+                .body(CommonResponse.of("로그인 성공", loginResponseDTO));
     }
 
 }

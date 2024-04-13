@@ -5,9 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LoginUserResponseDTO {
+public class LoginResponseDTO {
 
     private Long userId;
+
+    private String image;
 
     private String username;
 
@@ -22,4 +24,12 @@ public class LoginUserResponseDTO {
     private String birthday;
 
     private String nation;
+
+    private String phoneNumber;
+
+    private Boolean isAdmin;
+
+    private Boolean isAuthenticated;
+
+    private Boolean isAgreed;
 }
