@@ -20,7 +20,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserProfileResponseDTO getUserProfile(Long userId) {
-
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
@@ -42,7 +41,6 @@ public class UserService {
 
     @Transactional
     public void updateUserProfile(Long userId, UserProfileUpdateRequestDTO profileUpdate) {
-
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
@@ -60,7 +58,6 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long userId, PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
-
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
@@ -74,5 +71,17 @@ public class UserService {
 
         newUser.setPassword(passwordEncoder.encode(passwordUpdateRequestDTO.getUpdatePassword()));
         userRepository.save(newUser);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_USER_PASSWORD);
+        }
+
+        userRepository.delete(user);
     }
 }
