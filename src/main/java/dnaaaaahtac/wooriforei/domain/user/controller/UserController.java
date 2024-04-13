@@ -2,8 +2,8 @@ package dnaaaaahtac.wooriforei.domain.user.controller;
 
 import dnaaaaahtac.wooriforei.domain.user.dto.PasswordCheckRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.PasswordUpdateRequestDTO;
-import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileResponseDTO;
-import dnaaaaahtac.wooriforei.domain.user.dto.UserProfileUpdateRequestDTO;
+import dnaaaaahtac.wooriforei.domain.user.dto.ProfileRequestDTO;
+import dnaaaaahtac.wooriforei.domain.user.dto.ProfileResponseDTO;
 import dnaaaaahtac.wooriforei.domain.user.service.UserService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +18,21 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<CommonResponse<UserProfileResponseDTO>> getUserProfile(
+    public ResponseEntity<CommonResponse<ProfileResponseDTO>> getProfile(
             @PathVariable Long userId) {
 
-        UserProfileResponseDTO userProfileResponseDTO = userService.getUserProfile(userId);
+        ProfileResponseDTO profileResponseDTO = userService.getProfile(userId);
 
         return ResponseEntity.ok()
-                .body(CommonResponse.of("프로필 조회 성공", userProfileResponseDTO));
+                .body(CommonResponse.of("프로필 조회 성공", profileResponseDTO));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<CommonResponse<Void>> updateUserProfile(
+    public ResponseEntity<CommonResponse<Void>> updateProfile(
             @PathVariable Long userId,
-            @RequestBody UserProfileUpdateRequestDTO userProfileUpdateRequestDTO) {
+            @RequestBody ProfileRequestDTO profileRequestDTO) {
 
-        userService.updateUserProfile(userId, userProfileUpdateRequestDTO);
+        userService.updateProfile(userId, profileRequestDTO);
 
         return ResponseEntity.ok(CommonResponse.of("프로필 수정 성공", null));
     }

@@ -19,11 +19,11 @@ public class User extends BaseTimeEntity {
     @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String nickname;
 
     @Column(length = 200, nullable = false)
-    private String userEmail;
+    private String email;
 
     @Column(length = 128, nullable = false)
     private String password;
@@ -37,6 +37,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean isAuthenticated = false;
 
+    @Column(nullable = false)
+    private Boolean isAdmin;
+
     @Column(length = 300)
     private String introduction;
 
@@ -44,6 +47,9 @@ public class User extends BaseTimeEntity {
     private String mbti;
 
     private String birthday;
+
+    @Column(length = 20)
+    private String phoneNumber;
 
     @Column(length = 100)
     private String nation;
@@ -62,10 +68,6 @@ public class User extends BaseTimeEntity {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
     }
 
     public void setPassword(String password) {
@@ -98,5 +100,17 @@ public class User extends BaseTimeEntity {
 
     public void setNation(String nation) {
         this.nation = nation;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

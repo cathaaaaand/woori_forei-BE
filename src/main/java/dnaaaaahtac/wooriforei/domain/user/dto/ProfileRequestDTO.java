@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Getter
 @Value
-public class UserProfileUpdateRequestDTO {
+public class ProfileRequestDTO {
 
     String username;
 
@@ -22,4 +22,6 @@ public class UserProfileUpdateRequestDTO {
     String nation;
 
     String image;
+
+    String phoneNumber;
 }
