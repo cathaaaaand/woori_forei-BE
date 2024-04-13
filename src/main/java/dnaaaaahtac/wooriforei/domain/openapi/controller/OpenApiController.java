@@ -4,15 +4,10 @@ package dnaaaaahtac.wooriforei.domain.openapi.controller;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.hotel.HotelResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.landmark.LandmarkResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDTO;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.SeoulGoods;
-import dnaaaaahtac.wooriforei.domain.openapi.service.ActivityService;
-import dnaaaaahtac.wooriforei.domain.openapi.service.HotelService;
-import dnaaaaahtac.wooriforei.domain.openapi.service.InformationService;
-import dnaaaaahtac.wooriforei.domain.openapi.service.SeoulGoodsService;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.*;
+import dnaaaaahtac.wooriforei.domain.openapi.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -33,6 +29,7 @@ public class OpenApiController {
     private final SeoulGoodsService seoulGoodsService;
     private final ActivityService activityService;
     private final HotelService hotelService;
+    private final LandmarkService landmarkService;
 
     //information 호출
     @GetMapping("/informations")
@@ -129,6 +126,28 @@ public class OpenApiController {
 
         return hotelService.findHotelById(hotelId)
                 .map(response -> ResponseEntity.ok().body(response));
+    }
+
+    @GetMapping("/landmarks")
+    public Mono<ResponseEntity<LandmarkResponseDTO>> landmarks(){
+
+        return landmarkService.retrieveHotel()
+                .map(response -> ResponseEntity.ok().body(response));
+    }
+
+    @GetMapping("/landmarks/check")
+    public ResponseEntity<List<Landmark>> checkAllLandmark(){
+
+        List<Landmark> landmarks = landmarkService.findAllLandmarks();
+
+        return ResponseEntity.ok().body(landmarks);
+    }
+
+    @GetMapping("/landmark/{landmarkId}/check")
+    public Mono<ResponseEntity<Landmark>> checkRestaurantById(@PathVariable Long landmarkId){
+
+        return landmarkService.findLandmarkById(landmarkId)
+                .map(reponse -> ResponseEntity.ok().body(reponse));
     }
 
 }
