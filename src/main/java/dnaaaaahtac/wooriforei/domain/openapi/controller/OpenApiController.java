@@ -5,6 +5,7 @@ import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.hotel.HotelResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.landmark.LandmarkResponseDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.restaurant.RestaurantResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.*;
 import dnaaaaahtac.wooriforei.domain.openapi.service.*;
@@ -29,6 +30,7 @@ public class OpenApiController {
     private final ActivityService activityService;
     private final HotelService hotelService;
     private final LandmarkService landmarkService;
+    private final RestaurantService restaurantService;
 
     //information 호출
     @GetMapping("/informations")
@@ -143,10 +145,34 @@ public class OpenApiController {
     }
 
     @GetMapping("/landmarks/{landmarkId}/check")
-    public Mono<ResponseEntity<Landmark>> checkRestaurantById(@PathVariable Long landmarkId){
+    public Mono<ResponseEntity<Landmark>> checkLandmarkById(@PathVariable Long landmarkId){
 
         return landmarkService.findLandmarkById(landmarkId)
                 .map(reponse -> ResponseEntity.ok().body(reponse));
     }
+
+    @GetMapping("/restaurants")
+    public Mono<ResponseEntity<List<RestaurantResponseDTO>>> restaurants() {
+
+        return restaurantService.retrieveRestaurantPage()
+                .collectList()
+                .map(response ->ResponseEntity.ok().body(response));
+    }
+
+    @GetMapping("/restaurants/check")
+    public ResponseEntity<List<Restaurant>> checkAllRestaurant() {
+
+        List<Restaurant> restaurants = restaurantService.findAllRestaurant();
+
+        return ResponseEntity.ok().body(restaurants);
+    }
+
+    @GetMapping("/restaurants/{restaurantId}/check")
+    public Mono<ResponseEntity<Restaurant>> checkRestaurantById (@PathVariable Long restaurantId) {
+
+        return restaurantService.findRestaurantById(restaurantId)
+                .map(response -> ResponseEntity.ok().body(response));
+    }
+
 
 }
