@@ -7,6 +7,6 @@ import lombok.Getter;
 public class SeoulGoodsResponseDTO {
 
     @JsonProperty("frgnrTourGiftShopInfo")
-    private SeoulGoodsResponseVO frgnrtourgiftshopinfo;
+    private SeoulGoodsResponseVO frgnrTourGiftShopInfo;
 
 }
