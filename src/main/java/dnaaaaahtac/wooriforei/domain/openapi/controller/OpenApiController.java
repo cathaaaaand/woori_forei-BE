@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -129,9 +128,9 @@ public class OpenApiController {
     }
 
     @GetMapping("/landmarks")
-    public Mono<ResponseEntity<LandmarkResponseDTO>> landmarks(){
-
-        return landmarkService.retrieveHotel()
+    public Mono<ResponseEntity<List<LandmarkResponseDTO>>> landmarks() {
+        return landmarkService.retrieveLandmarkPage()
+                .collectList()  // Flux를 List로 변환
                 .map(response -> ResponseEntity.ok().body(response));
     }
 
@@ -143,7 +142,7 @@ public class OpenApiController {
         return ResponseEntity.ok().body(landmarks);
     }
 
-    @GetMapping("/landmark/{landmarkId}/check")
+    @GetMapping("/landmarks/{landmarkId}/check")
     public Mono<ResponseEntity<Landmark>> checkRestaurantById(@PathVariable Long landmarkId){
 
         return landmarkService.findLandmarkById(landmarkId)

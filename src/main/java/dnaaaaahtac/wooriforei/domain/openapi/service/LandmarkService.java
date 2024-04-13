@@ -1,9 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.openapi.service;
 
-import dnaaaaahtac.wooriforei.domain.openapi.dto.hotel.HotelDetailDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.landmark.LandmarkDetailDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.landmark.LandmarkResponseDTO;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Landmark;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.LandmarkRepository;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
@@ -12,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -31,25 +31,53 @@ public class LandmarkService {
             @Value("${AUTH_KEY}") String authKey,
             LandmarkRepository landmarkRepository) {
 
-        this.webClient = webClientBuilder.baseUrl("http://openapi.seoul.go.kr:8088").build();
+        ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+                .codecs(clientCodecConfigurer -> clientCodecConfigurer
+                        .defaultCodecs()
+                        .maxInMemorySize(16 * 1024 * 1024)) // 16MB로 설정
+                .build();
+
+        this.webClient = webClientBuilder
+                .baseUrl("http://openapi.seoul.go.kr:8088")
+                .exchangeStrategies(exchangeStrategies)
+                .build();
         this.authKey = authKey;
         this.landmarkRepository = landmarkRepository;
     }
 
-    public Mono<LandmarkResponseDTO> retrieveHotel() {
+    public Flux<LandmarkResponseDTO> retrieveLandmarkPage() {
+
+        int totalItems = 1999;
+        int pageSize = 1000;
+
+        // 총 페이지 수 계산
+        int totalPages = (totalItems + pageSize - 1) / pageSize;
+
+        return Flux.range(1, totalPages)
+                .flatMap(page -> {
+                    int startIdx = (page - 1) * pageSize + 1;
+                    int endIdx = startIdx + pageSize - 1;
+                    if (endIdx > totalItems) {
+                        endIdx = totalItems;
+                    }
+                    return retrieveLandmark(startIdx, endIdx);
+                });
+    }
+
+    private Mono<LandmarkResponseDTO> retrieveLandmark(int startIdx, int endIdx) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/{authKey}/{responseType}/{serviceName}/{startIdx}/{endIdx}")
-                        .build(authKey, "json", "SebcHotelListKor", 1, 999))
+                        .build(authKey, "json", "TbVwAttractions", startIdx, endIdx))
                 .header("Content-type", "application/json")
                 .retrieve()
                 .bodyToMono(LandmarkResponseDTO.class)
                 .doOnSuccess(response -> {
-                    System.out.println("Successfully retrieved data");
+                    System.out.println("Successfully retrieved data from " + startIdx + " to " + endIdx);
                     saveLandmarkDetails(response);
                 })
-                .doOnError(e -> System.out.println("Error: " + e.getMessage()));
+                .doOnError(e -> System.out.println("Error retrieving data from " + startIdx + " to " + endIdx + ": " + e.getMessage()));
     }
 
     // 전체 조회
@@ -72,9 +100,11 @@ public class LandmarkService {
     }
 
     @Transactional
-    public void saveLandmarkDetails(LandmarkResponseDTO wrapper) {
+    public void saveLandmarkDetails(LandmarkResponseDTO response) {
 
-        wrapper.getTbVwAttractions().getRow().forEach(this::convertAndSave);
+        response.getTbVwAttractions().getRow().stream()
+                .filter(detail -> "ko".equals(detail.getLangCodeId()))
+                .forEach(this::convertAndSave);
     }
 
     @Transactional
