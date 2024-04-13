@@ -50,7 +50,6 @@ public class SeoulGoodsService {
                 .doOnError(e -> System.out.println("Error: " + e.getMessage()));
     }
 
-
     // 전체 조회
     public List<SeoulGoods> findAllSeoulGoods() {
 
