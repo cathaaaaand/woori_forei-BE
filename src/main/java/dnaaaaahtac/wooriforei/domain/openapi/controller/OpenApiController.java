@@ -2,12 +2,15 @@ package dnaaaaahtac.wooriforei.domain.openapi.controller;
 
 
 import dnaaaaahtac.wooriforei.domain.openapi.dto.activity.ActivityResponseDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.hotel.HotelResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods.SeoulGoodsResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.SeoulGoods;
 import dnaaaaahtac.wooriforei.domain.openapi.service.ActivityService;
+import dnaaaaahtac.wooriforei.domain.openapi.service.HotelService;
 import dnaaaaahtac.wooriforei.domain.openapi.service.InformationService;
 import dnaaaaahtac.wooriforei.domain.openapi.service.SeoulGoodsService;
 import lombok.AllArgsConstructor;
@@ -29,6 +32,7 @@ public class OpenApiController {
     private final InformationService informationService;
     private final SeoulGoodsService seoulGoodsService;
     private final ActivityService activityService;
+    private final HotelService hotelService;
 
     //information 호출
     @GetMapping("/informations")
@@ -52,7 +56,7 @@ public class OpenApiController {
     public Mono<ResponseEntity<Information>> checkInformationById(@PathVariable Long informationId) {
 
         return informationService.findInformationById(informationId)
-                .map(information -> ResponseEntity.ok().body(information));
+                .map(response -> ResponseEntity.ok().body(response));
     }
 
     //seoulgoods 호출
@@ -77,7 +81,7 @@ public class OpenApiController {
     public Mono<ResponseEntity<SeoulGoods>> checkSeoulGoodsById(@PathVariable Long seoulgoodsId) {
 
         return seoulGoodsService.findInSeoulGoodsById(seoulgoodsId)
-                .map(seoulGoods -> ResponseEntity.ok().body(seoulGoods));
+                .map(response -> ResponseEntity.ok().body(response));
     }
 
     //activity 호출
@@ -99,9 +103,32 @@ public class OpenApiController {
 
     //activity 단일 조회
     @GetMapping("/activities/{activitiesId}/check")
-    public Mono<ResponseEntity<Activity>> checkActivitiesById(@PathVariable Long activitiesId) {
+    public Mono<ResponseEntity<Activity>> checkActivitiesById (@PathVariable Long activitiesId) {
 
         return activityService.findActivityById(activitiesId)
-                .map(activity -> ResponseEntity.ok().body(activity));
+                .map(response -> ResponseEntity.ok().body(response));
     }
+
+    @GetMapping("/hotels")
+    public Mono<ResponseEntity<HotelResponseDTO>> hotels(){
+
+        return hotelService.retrieveHotel()
+                .map(response -> ResponseEntity.ok().body(response));
+    }
+
+    @GetMapping("/hotels/check")
+    public ResponseEntity<List<Hotel>> checkALLHotels(){
+
+        List<Hotel> hotels = hotelService.findAllHotels();
+
+        return ResponseEntity.ok().body(hotels);
+    }
+
+    @GetMapping("/hotels/{hotelId}/check")
+    public Mono<ResponseEntity<Hotel>> checkHotelsById (@PathVariable Long hotelId){
+
+        return hotelService.findHotelById(hotelId)
+                .map(response -> ResponseEntity.ok().body(response));
+    }
+
 }
