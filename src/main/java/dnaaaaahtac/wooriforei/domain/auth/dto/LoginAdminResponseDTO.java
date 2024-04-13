@@ -8,7 +8,10 @@ import lombok.Getter;
 public class LoginAdminResponseDTO {
 
     private Long adminId;
+
     private String adminName;
+
     private String adminEmail;
+
     private String phoneNumber;
 }

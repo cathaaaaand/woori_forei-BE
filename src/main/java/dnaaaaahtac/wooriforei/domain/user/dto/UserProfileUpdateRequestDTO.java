@@ -8,11 +8,18 @@ import lombok.Value;
 public class UserProfileUpdateRequestDTO {
 
     String username;
+
     String nickname;
+
     String email;
+
     String description;
+
     String mbti;
+
     String birthday;
+
     String nation;
+
     String image;
 }

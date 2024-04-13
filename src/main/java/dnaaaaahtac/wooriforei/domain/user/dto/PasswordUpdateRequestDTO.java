@@ -8,6 +8,8 @@ import lombok.Value;
 public class PasswordUpdateRequestDTO {
 
     String password;
+
     String updatePassword;
+
     String checkUpdatePassword;
 }
