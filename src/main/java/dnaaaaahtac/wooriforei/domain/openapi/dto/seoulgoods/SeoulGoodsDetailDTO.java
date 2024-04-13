@@ -1,14 +1,10 @@
 package dnaaaaahtac.wooriforei.domain.openapi.dto.seoulgoods;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class SeoulGoodsDetailDto {
+@Getter
+public class SeoulGoodsDetailDTO {
 
     @JsonProperty("NM")
     private String nm;

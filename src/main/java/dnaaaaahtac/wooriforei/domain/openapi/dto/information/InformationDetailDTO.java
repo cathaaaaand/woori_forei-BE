@@ -2,14 +2,10 @@
 package dnaaaaahtac.wooriforei.domain.openapi.dto.information;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class InformationDetailDto {
+@Getter
+public class InformationDetailDTO {
 
     @JsonProperty("TRSMICNM")
     private String trsmicnm;
