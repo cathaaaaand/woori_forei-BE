@@ -1,7 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.openapi.service;
 
-import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationDetailDto;
-import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDto;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationDetailDTO;
+import dnaaaaahtac.wooriforei.domain.openapi.dto.information.InformationResponseDTO;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.InformationRepository;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
@@ -33,7 +33,7 @@ public class InformationService {
         this.informationRepository = informationRepository;
     }
 
-    public Mono<InformationResponseDto> retrieveInformation() {
+    public Mono<InformationResponseDTO> retrieveInformation() {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -41,7 +41,7 @@ public class InformationService {
                         .build(authKey, "json", "TbTourInformation", 1, 999))
                 .header("Content-type", "application/json")
                 .retrieve()
-                .bodyToMono(InformationResponseDto.class)
+                .bodyToMono(InformationResponseDTO.class)
                 .doOnSuccess(response -> {
                     System.out.println("Successfully retrieved data");
                     saveInformationDetails(response);
@@ -69,19 +69,19 @@ public class InformationService {
         return Mono.justOrEmpty(informationOptional);
     }
 
-    private void saveInformationDetails(InformationResponseDto wrapper) {
+    private void saveInformationDetails(InformationResponseDTO wrapper) {
 
         wrapper.getTbTourInformation().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(InformationDetailDto detail) {
+    private void convertAndSave(InformationDetailDTO detail) {
 
         informationRepository.findByTrsmicnmAndSigngunm(detail.getTrsmicnm(), detail.getSigngunm())
                 .ifPresentOrElse(existingInfo -> updateExistingInformation(existingInfo, detail),
                         () -> informationRepository.save(mapToEntity(new Information(), detail)));
     }
 
-    private Information mapToEntity(Information information, InformationDetailDto detail) {
+    private Information mapToEntity(Information information, InformationDetailDTO detail) {
         // DTO -> Entity 매핑
         information.setTrsmicnm(detail.getTrsmicnm());
         information.setSigngunm(detail.getSigngunm());
@@ -105,7 +105,7 @@ public class InformationService {
         return information;
     }
 
-    private void updateExistingInformation(Information existingInfo, InformationDetailDto detail) {
+    private void updateExistingInformation(Information existingInfo, InformationDetailDTO detail) {
 
         boolean updated = false;
 
