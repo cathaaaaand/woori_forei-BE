@@ -11,7 +11,7 @@ public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    private Long userId;
 
     @Column(length = 100)
     private String image;
@@ -54,7 +54,7 @@ public class User extends BaseTimeEntity {
     @Column(length = 100)
     private String nation;
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

@@ -26,11 +26,12 @@ public enum ErrorCode {
     // Scheduler
 
     //OpenAPI
-    NOT_FOUND_DATA(404,"데이터가 존재하지 않습니다."),
+    NOT_FOUND_DATA(404, "데이터가 존재하지 않습니다."),
 
     // User
     NOT_FOUND_USER_EXCEPTION(404, "해당 유저가 존재하지 않습니다."),
     INVALID_USER_PASSWORD(401, "비밀번호가 올바르지 않습니다."),
+    UNAUTHORIZED_USER_ACCESS(403, "접근 권한이 없습니다."),
 
     // Common
     INVALID_JWT_TOKEN(401, "유효하지 않은 JWT 토큰입니다."),

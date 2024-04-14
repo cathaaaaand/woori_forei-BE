@@ -24,7 +24,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
         return ProfileResponseDTO.builder()
-                .userId(Long.valueOf(newUser.getUserId()))
+                .userId(newUser.getUserId())
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
@@ -46,6 +46,10 @@ public class UserService {
     public void updateProfile(Long userId, ProfileRequestDTO profileRequestDTO) {
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!newUser.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
 
         newUser.setUsername(profileRequestDTO.getUsername());
         newUser.setNickname(profileRequestDTO.getNickname());
@@ -73,19 +77,27 @@ public class UserService {
             throw new CustomException(ErrorCode.PASSWORD_CONFIRMATION_FAILED);
         }
 
+        if (!newUser.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
         newUser.setPassword(passwordEncoder.encode(passwordUpdateRequestDTO.getUpdatePassword()));
         userRepository.save(newUser);
     }
 
     @Transactional
     public void deleteUser(Long userId, String password) {
-        User user = userRepository.findById(userId)
+        User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, newUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_USER_PASSWORD);
         }
 
-        userRepository.delete(user);
+        if (!newUser.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
+        userRepository.delete(newUser);
     }
 }
