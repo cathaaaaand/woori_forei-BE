@@ -3,7 +3,9 @@ package dnaaaaahtac.wooriforei.domain.auth.controller;
 import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.LoginResponseDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.VerificationEmailCodeRequestDTO;
 import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
+import dnaaaaahtac.wooriforei.domain.auth.service.EmailVerificationService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailVerificationService emailVerificationService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
@@ -47,4 +50,24 @@ public class AuthController {
                 .body(CommonResponse.of("로그인 성공", loginResponseDTO));
     }
 
+    @PostMapping("/send-verification-email")
+    public ResponseEntity<CommonResponse<Void>> sendVerificationEmail(
+            @RequestBody @Valid VerificationEmailCodeRequestDTO verificationEmailCodeRequestDTO) {
+
+        emailVerificationService.sendVerificationEmail(verificationEmailCodeRequestDTO.getEmail());
+
+        return ResponseEntity.ok(CommonResponse.of("이메일 인증 코드 발송 성공", null));
+    }
+
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<CommonResponse<Void>> verifyEmail(
+            @RequestBody VerificationEmailCodeRequestDTO verificationEmailCodeRequestDTO) {
+
+        emailVerificationService.verifyEmail(
+                verificationEmailCodeRequestDTO.getEmail(),
+                verificationEmailCodeRequestDTO.getVerificationCode());
+
+        return ResponseEntity.ok(CommonResponse.of("이메일 인증 성공", null));
+    }
 }

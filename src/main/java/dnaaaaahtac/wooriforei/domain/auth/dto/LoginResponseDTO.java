@@ -29,7 +29,5 @@ public class LoginResponseDTO {
 
     private Boolean isAdmin;
 
-    private Boolean isAuthenticated;
-
     private Boolean isAgreed;
 }

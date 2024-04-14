@@ -40,9 +40,6 @@ public class RegisterRequestDTO {
     private Boolean isAgreed;
 
     @NotNull
-    private Boolean isAuthenticated;
-
-    @NotNull
     private Boolean isAdmin = false;
 
     private String phoneNumber;
@@ -95,10 +92,6 @@ public class RegisterRequestDTO {
 
     public void setAgreed(Boolean agreed) {
         isAgreed = agreed;
-    }
-
-    public void setAuthenticated(Boolean authenticated) {
-        isAuthenticated = authenticated;
     }
 
     public void setAdmin(Boolean admin) {

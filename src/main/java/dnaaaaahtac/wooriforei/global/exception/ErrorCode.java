@@ -16,6 +16,12 @@ public enum ErrorCode {
     PASSWORD_CONFIRMATION_FAILED(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     AGREEMENT_NOT_ACCEPTED(400, "약관에 동의하지 않았습니다."),
     INVALID_PASSWORD(401, "이메일 또는 비밀번호가 유효하지 않습니다."),
+    EMAIL_SEND_FAILED(500, "이메일 발송에 실패했습니다."),
+    EMAIL_VERIFICATION_NOT_FOUND(404, "요청된 이메일 인증 정보를 찾을 수 없습니다."),
+    INVALID_VERIFICATION_CODE(400, "제공된 인증 코드가 잘못되었습니다."),
+    EXPIRED_VERIFICATION_CODE(410, "인증 코드가 만료되었습니다."),
+    EMAIL_SEND_LIMIT_EXCEEDED(429, "인증 이메일 전송 횟수가 초과되었습니다."),
+    EMAIL_NOT_VERIFIED(400, "이메일이 인증되지 않았습니다."),
 
     // Board
 

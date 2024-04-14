@@ -37,7 +37,6 @@ public class UserService {
                 .commentId(null)
                 .image(newUser.getImage())
                 .isAdmin(newUser.getIsAdmin())
-                .isAuthenticated(newUser.getIsAuthenticated())
                 .phoneNumber(newUser.getPhoneNumber())
                 .build();
     }

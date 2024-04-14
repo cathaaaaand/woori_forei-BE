@@ -3,6 +3,8 @@ package dnaaaaahtac.wooriforei.domain.auth.service;
 import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.LoginResponseDTO;
 import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.entity.EmailVerification;
+import dnaaaaahtac.wooriforei.domain.auth.repository.EmailVerificationRepository;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -50,6 +53,9 @@ public class AuthService {
             }
         }
 
+        EmailVerification verification = emailVerificationRepository.findByEmailAndVerified(registerRequestDTO.getEmail(), true)
+                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_VERIFIED));
+
         User newUser = new User();
         newUser.setUsername(registerRequestDTO.getUsername());
         newUser.setNickname(registerRequestDTO.getNickname());
@@ -62,6 +68,9 @@ public class AuthService {
         newUser.setAdmin(registerRequestDTO.getIsAdmin());
 
         userRepository.save(newUser);
+
+        verification.setUserId(newUser);
+        emailVerificationRepository.save(verification);
     }
 
     public LoginResponseDTO login(LoginRequestDTO requestDTO) {
@@ -74,7 +83,7 @@ public class AuthService {
         }
 
         return LoginResponseDTO.builder()
-                .userId(Long.valueOf(newUser.getUserId()))
+                .userId(newUser.getUserId())
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
@@ -85,7 +94,6 @@ public class AuthService {
                 .nation(newUser.getNation())
                 .image(newUser.getImage())
                 .isAdmin(newUser.getIsAdmin())
-                .isAuthenticated(newUser.getIsAuthenticated())
                 .isAgreed(newUser.getIsAgreed())
                 .build();
     }
