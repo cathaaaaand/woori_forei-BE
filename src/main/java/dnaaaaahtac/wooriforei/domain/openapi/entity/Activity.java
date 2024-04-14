@@ -11,7 +11,7 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long activityId;
 
     @Column
     private String svcid;

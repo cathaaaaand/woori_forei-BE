@@ -11,7 +11,7 @@ public class Information {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long informationId;
 
     @Column
     private String trsmicnm;

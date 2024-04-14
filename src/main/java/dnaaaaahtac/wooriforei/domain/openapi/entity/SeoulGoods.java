@@ -11,7 +11,7 @@ public class SeoulGoods {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long seoulGoodsId;
 
     @Column
     private String nm;

@@ -11,7 +11,7 @@ public class Landmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long randmarkId;
 
     @Column
     private String postSn;
