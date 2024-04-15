@@ -1,3 +1,10 @@
+# Ignore all log files
+logs/
+*.log
+
+# Specific ignore for archived logs
+logs/archived/*.log
+
 HELP.md
 .gradle
 build/
