@@ -1,6 +1,5 @@
 package dnaaaaahtac.wooriforei.domain.openapi.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,7 @@ public class Information {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long informationId;
 
     @Column
     private String trsmicnm;
