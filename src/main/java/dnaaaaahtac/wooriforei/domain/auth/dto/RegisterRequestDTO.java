@@ -4,12 +4,12 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
-public class RegisterUserRequestDTO {
+public class RegisterRequestDTO {
 
     @NotBlank
     private String username;
 
-    @NotBlank
+
     private String nickname;
 
     @NotBlank
@@ -38,6 +38,13 @@ public class RegisterUserRequestDTO {
 
     @NotNull
     private Boolean isAgreed;
+
+    @NotNull
+    private Boolean isAdmin = false;
+
+    private String phoneNumber;
+
+    private String secretCode;
 
     public void setIsAgreed(Boolean agreed) {
         isAgreed = agreed;
@@ -82,4 +89,22 @@ public class RegisterUserRequestDTO {
     public void setImage(String image) {
         this.image = image;
     }
+
+    public void setAgreed(Boolean agreed) {
+        isAgreed = agreed;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setSecretCode(String secretCode) {
+        this.secretCode = secretCode;
+    }
+
+
 }

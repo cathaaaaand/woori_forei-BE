@@ -14,10 +14,20 @@ public class UserDetailsService implements org.springframework.security.core.use
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        // userId를 Long 타입으로 파싱합니다. 유효하지 않은 포맷이면 예외를 발생시킵니다.
+        Long id;
+        try {
+            id = Long.parseLong(userId);
+        } catch (NumberFormatException e) {
+            throw new UsernameNotFoundException("Invalid user ID format: " + userId, e);
+        }
 
+        // userId를 사용하여 사용자를 찾습니다.
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + id));
+
+        // UserDetails를 구현한 클래스의 인스턴스를 반환합니다.
         return new UserDetailsImpl(user);
     }
 }
