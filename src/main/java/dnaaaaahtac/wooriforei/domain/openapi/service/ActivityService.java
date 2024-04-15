@@ -9,6 +9,7 @@ import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -78,12 +79,14 @@ public class ActivityService {
         return Mono.justOrEmpty(activityOptional);
     }
 
-    private void saveActivityDetails(ActivityResponseDTO wrapper) {
+    @Transactional
+    public void saveActivityDetails(ActivityResponseDTO wrapper) {
 
         wrapper.getListPublicReservationCulture().getRow().forEach(this::convertAndSave);
     }
 
-    private void convertAndSave(ActivityDetailDTO detail) {
+    @Transactional
+    public void convertAndSave(ActivityDetailDTO detail) {
 
         activityRepository.findBySvcid(detail.getSvcid())
                 .ifPresentOrElse(existingAct -> updateExistingActivity(existingAct, detail),

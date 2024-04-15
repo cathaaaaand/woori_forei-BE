@@ -1,7 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.openapi.repository;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.SeoulGoods;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
