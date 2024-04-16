@@ -22,6 +22,15 @@ public class SchedulerMember extends BaseTimeEntity {
     @JoinColumn(name = "userId")
     private User user;
 
+    protected SchedulerMember() {
+    }
+
+    // 필요한 인자를 받는 생성자
+    public SchedulerMember(Scheduler scheduler, User user) {
+        this.scheduler = scheduler;
+        this.user = user;
+    }
+
     public void setSchedulerMemberId(Long schedulerMemberId) {
         this.schedulerMemberId = schedulerMemberId;
     }
