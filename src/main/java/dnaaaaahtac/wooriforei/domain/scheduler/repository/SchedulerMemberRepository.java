@@ -14,4 +14,6 @@ public interface SchedulerMemberRepository extends JpaRepository<SchedulerMember
 
     List<SchedulerMember> findByScheduler(Scheduler scheduler);
 
+    void deleteAllByScheduler(Scheduler scheduler);
+
 }

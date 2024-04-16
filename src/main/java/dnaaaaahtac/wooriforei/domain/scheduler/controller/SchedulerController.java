@@ -54,4 +54,13 @@ public class SchedulerController {
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 수정 성공", updatedScheduler));
     }
+
+    @DeleteMapping("/{schedulerId}")
+    public ResponseEntity<CommonResponse<String>> deleteScheduler(
+            @PathVariable Long schedulerId) {
+
+        schedulerService.deleteScheduler(schedulerId);
+
+        return ResponseEntity.ok(CommonResponse.of("스케줄러 삭제 성공", null));
+    }
 }

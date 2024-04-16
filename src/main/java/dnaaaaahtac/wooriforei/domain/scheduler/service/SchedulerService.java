@@ -170,4 +170,12 @@ public class SchedulerService {
         return response;
     }
 
+    @Transactional
+    public void deleteScheduler(Long schedulerId) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        schedulerMemberRepository.deleteAllByScheduler(scheduler);
+        schedulerRepository.delete(scheduler);
+    }
 }
