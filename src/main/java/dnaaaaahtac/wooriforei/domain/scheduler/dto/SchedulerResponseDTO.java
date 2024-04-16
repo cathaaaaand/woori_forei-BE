@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class SchedulerCreateResponseDTO {
+public class SchedulerResponseDTO {
 
     private Long schedulerId;
     private String schedulerName;

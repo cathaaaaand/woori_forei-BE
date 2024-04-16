@@ -1,7 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.service;
 
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerCreateRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerCreateResponseDTO;
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.Scheduler;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerMember;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerMemberRepository;
@@ -28,7 +28,7 @@ public class SchedulerService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SchedulerCreateResponseDTO createScheduler(SchedulerCreateRequestDTO requestDTO) {
+    public SchedulerResponseDTO createScheduler(SchedulerCreateRequestDTO requestDTO) {
 
         if (requestDTO.getStartDate().isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
@@ -61,7 +61,7 @@ public class SchedulerService {
                 .map(user -> new UserDetailResponseDTO(user.getUserId(), user.getUsername(), user.getNickname(), user.getEmail()))
                 .collect(Collectors.toList());
 
-        SchedulerCreateResponseDTO response = new SchedulerCreateResponseDTO();
+        SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(savedScheduler.getSchedulerId());
         response.setSchedulerName(savedScheduler.getSchedulerName());
         response.setStartDate(savedScheduler.getStartDate());
@@ -70,4 +70,29 @@ public class SchedulerService {
 
         return response;
     }
+
+    @Transactional
+    public SchedulerResponseDTO getSchedulerById(Long schedulerId) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        List<SchedulerMember> schedulerMembers = schedulerMemberRepository.findByScheduler_SchedulerId(schedulerId);
+        List<UserDetailResponseDTO> memberDetails = schedulerMembers.stream()
+                .map(member -> new UserDetailResponseDTO(
+                        member.getUser().getUserId(),
+                        member.getUser().getUsername(),
+                        member.getUser().getNickname(),
+                        member.getUser().getEmail()))
+                .collect(Collectors.toList());
+
+        SchedulerResponseDTO response = new SchedulerResponseDTO();
+        response.setSchedulerId(scheduler.getSchedulerId());
+        response.setSchedulerName(scheduler.getSchedulerName());
+        response.setStartDate(scheduler.getStartDate());
+        response.setEndDate(scheduler.getEndDate());
+        response.setMembers(memberDetails);
+
+        return response;
+    }
+
 }

@@ -32,6 +32,7 @@ public enum ErrorCode {
     // Scheduler
     INVALID_START_DATE(400, "시작일이 현재 시간 이전일 수 없습니다."),
     INVALID_END_DATE(400, "종료일이 시작일 이전일 수 없습니다."),
+    NOT_FOUND_SCHEDULER(404, "요청한 스케줄러를 찾을 수 없습니다."),
 
     //OpenAPI
     NOT_FOUND_DATA(404, "데이터가 존재하지 않습니다."),
