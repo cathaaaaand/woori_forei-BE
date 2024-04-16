@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/schedulers")
 @RequiredArgsConstructor
@@ -36,4 +38,10 @@ public class SchedulerController {
         return ResponseEntity.ok(CommonResponse.of("스케줄러 단일 조회 성공", scheduler));
     }
 
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<SchedulerResponseDTO>>> getAllSchedulers() {
+        List<SchedulerResponseDTO> schedulers = schedulerService.getAllSchedulers();
+
+        return ResponseEntity.ok(CommonResponse.of("스케줄러 전체 조회 성공", schedulers));
+    }
 }

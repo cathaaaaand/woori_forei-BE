@@ -61,14 +61,7 @@ public class SchedulerService {
                 .map(user -> new UserDetailResponseDTO(user.getUserId(), user.getUsername(), user.getNickname(), user.getEmail()))
                 .collect(Collectors.toList());
 
-        SchedulerResponseDTO response = new SchedulerResponseDTO();
-        response.setSchedulerId(savedScheduler.getSchedulerId());
-        response.setSchedulerName(savedScheduler.getSchedulerName());
-        response.setStartDate(savedScheduler.getStartDate());
-        response.setEndDate(savedScheduler.getEndDate());
-        response.setMembers(memberDetails);
-
-        return response;
+        return getSchedulerResponseDTO(savedScheduler, memberDetails);
     }
 
     @Transactional
@@ -85,11 +78,38 @@ public class SchedulerService {
                         member.getUser().getEmail()))
                 .collect(Collectors.toList());
 
+        return getSchedulerResponseDTO(scheduler, memberDetails);
+    }
+
+    @Transactional
+    public List<SchedulerResponseDTO> getAllSchedulers() {
+        List<Scheduler> schedulers = schedulerRepository.findAll();
+
+        return schedulers.stream().map(scheduler -> {
+            List<SchedulerMember> schedulerMembers
+                    = schedulerMemberRepository.findByScheduler_SchedulerId(scheduler.getSchedulerId());
+            List<UserDetailResponseDTO> memberDetails = schedulerMembers.stream()
+                    .map(member -> new UserDetailResponseDTO(
+                            member.getUser().getUserId(),
+                            member.getUser().getUsername(),
+                            member.getUser().getNickname(),
+                            member.getUser().getEmail()))
+                    .collect(Collectors.toList());
+
+            return getSchedulerResponseDTO(scheduler, memberDetails);
+
+        }).collect(Collectors.toList());
+    }
+
+
+    private SchedulerResponseDTO getSchedulerResponseDTO(Scheduler scheduler, List<UserDetailResponseDTO> memberDetails) {
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
         response.setSchedulerName(scheduler.getSchedulerName());
         response.setStartDate(scheduler.getStartDate());
         response.setEndDate(scheduler.getEndDate());
+        response.setCreatedAt(scheduler.getCreatedAt());
+        response.setModifiedAt(scheduler.getModifiedAt());
         response.setMembers(memberDetails);
 
         return response;
