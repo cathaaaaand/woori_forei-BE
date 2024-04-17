@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,8 +81,41 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        return getSchedulerResponseDTO(schedulerId, scheduler);
+        List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler_SchedulerId(schedulerId)
+                .stream()
+                .map(member -> new UserDetailResponseDTO(
+                        member.getUser().getUserId(),
+                        member.getUser().getUsername(),
+                        member.getUser().getNickname(),
+                        member.getUser().getEmail()))
+                .collect(Collectors.toList());
+
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>();
+
+        List<SchedulerActivity> activities = schedulerActivityRepository.findByScheduler(scheduler);
+        for (SchedulerActivity activity : activities) {
+            SchedulerResponseDTO.OpenAPIDetailsDTO apiDetails = new SchedulerResponseDTO.OpenAPIDetailsDTO();
+            apiDetails.setId(activity.getActivity().getActivityId());
+            apiDetails.setName(activity.getActivity().getSvcnm());
+            apiDetails.setVisitStart(activity.getVisitStart());
+            apiDetails.setVisitEnd(activity.getVisitEnd());
+            apiDetails.setType("activity");
+            openAPIs.add(apiDetails);
+        }
+
+        SchedulerResponseDTO response = new SchedulerResponseDTO();
+        response.setSchedulerId(scheduler.getSchedulerId());
+        response.setSchedulerName(scheduler.getSchedulerName());
+        response.setStartDate(scheduler.getStartDate());
+        response.setEndDate(scheduler.getEndDate());
+        response.setCreatedAt(scheduler.getCreatedAt());
+        response.setModifiedAt(scheduler.getModifiedAt());
+        response.setMembers(memberDetails);
+        response.setOpenAPIs(openAPIs);
+
+        return response;
     }
+
 
     @Transactional
     public List<SchedulerResponseDTO> getAllSchedulers() {
