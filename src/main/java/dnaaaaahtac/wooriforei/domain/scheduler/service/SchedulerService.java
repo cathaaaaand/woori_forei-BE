@@ -35,6 +35,8 @@ public class SchedulerService {
     private final SchedulerLandmarkRepository schedulerLandmarkRepository;
     private final RestaurantRepository restaurantRepository;
     private final SchedulerRestaurantRepository schedulerRestaurantRepository;
+    private final SeoulGoodsRepository seoulGoodsRepository;
+    private final SchedulerSeoulGoodsRepository schedulerSeoulGoodsRepository;
 
     @Transactional
     public SchedulerResponseDTO createScheduler(SchedulerRequestDTO requestDTO) {
@@ -272,5 +274,22 @@ public class SchedulerService {
                 restaurantDTO.getVisitEnd());
 
         schedulerRestaurantRepository.save(schedulerRestaurant);
+    }
+
+    @Transactional
+    public void addSeoulGoodsToScheduler(Long schedulerId, SchedulerSeoulGoodsRequestDTO seoulGoodsDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        SeoulGoods seoulGoods = seoulGoodsRepository.findById(seoulGoodsDTO.getGoodsId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SEOUL_GOODS));
+
+        SchedulerSeoulGoods schedulerSeoulGoods = new SchedulerSeoulGoods(
+                scheduler,
+                seoulGoods,
+                seoulGoodsDTO.getVisitStart(),
+                seoulGoodsDTO.getVisitEnd());
+
+        schedulerSeoulGoodsRepository.save(schedulerSeoulGoods);
     }
 }

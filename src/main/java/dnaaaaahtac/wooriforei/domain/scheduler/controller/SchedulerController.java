@@ -115,4 +115,14 @@ public class SchedulerController {
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러에 맛집 추가 성공", null));
     }
+
+    @PostMapping("/{schedulerId}/seoul-goods")
+    public ResponseEntity<CommonResponse<Void>> addSeoulGoodsToScheduler(
+            @PathVariable Long schedulerId,
+            @RequestBody SchedulerSeoulGoodsRequestDTO seoulGoodsDTO) {
+
+        schedulerService.addSeoulGoodsToScheduler(schedulerId, seoulGoodsDTO);
+
+        return ResponseEntity.ok(CommonResponse.of("스케줄러에 기념품판매소 추가 성공", null));
+    }
 }
