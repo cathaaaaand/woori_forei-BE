@@ -1,5 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.controller;
 
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerActivityRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerService;
@@ -56,11 +57,22 @@ public class SchedulerController {
     }
 
     @DeleteMapping("/{schedulerId}")
-    public ResponseEntity<CommonResponse<String>> deleteScheduler(
+    public ResponseEntity<CommonResponse<Void>> deleteScheduler(
             @PathVariable Long schedulerId) {
 
         schedulerService.deleteScheduler(schedulerId);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 삭제 성공", null));
+    }
+
+    @PostMapping("/{schedulerId}/activities")
+    public ResponseEntity<CommonResponse<Void>> addActivityToScheduler(
+            @PathVariable Long schedulerId,
+            @RequestBody @Valid SchedulerActivityRequestDTO activityDTO) {
+
+        schedulerService.addActivityToScheduler(schedulerId, activityDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.of("스케줄러에 문화체험 추가 성공", null));
     }
 }

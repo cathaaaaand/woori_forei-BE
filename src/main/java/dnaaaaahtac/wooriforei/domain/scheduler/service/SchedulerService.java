@@ -1,9 +1,14 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.service;
 
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerActivityRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.Scheduler;
+import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerActivity;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerMember;
+import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerActivityRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerMemberRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerRepository;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserDetailResponseDTO;
@@ -25,6 +30,8 @@ public class SchedulerService {
 
     private final SchedulerRepository schedulerRepository;
     private final SchedulerMemberRepository schedulerMemberRepository;
+    private final ActivityRepository activityRepository;
+    private final SchedulerActivityRepository schedulerActivityRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -178,4 +185,20 @@ public class SchedulerService {
         schedulerMemberRepository.deleteAllByScheduler(scheduler);
         schedulerRepository.delete(scheduler);
     }
+
+    @Transactional
+    public void addActivityToScheduler(Long schedulerId, SchedulerActivityRequestDTO activityDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        Activity activity = activityRepository.findById(activityDTO.getActivityId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
+
+        SchedulerActivity schedulerActivity = new SchedulerActivity(
+                scheduler, activity, activityDTO.getVisitStart(), activityDTO.getVisitEnd());
+        schedulerActivityRepository.save(schedulerActivity);
+
+        getSchedulerResponseDTO(schedulerId, scheduler);
+    }
+
 }
