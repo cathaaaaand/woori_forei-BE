@@ -1,14 +1,19 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.service;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.HotelRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerActivityRequestDTO;
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerHotelRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerRequestDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.Scheduler;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerActivity;
+import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerHotel;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerMember;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerActivityRepository;
+import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerHotelRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerMemberRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerRepository;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserDetailResponseDTO;
@@ -32,6 +37,8 @@ public class SchedulerService {
     private final SchedulerMemberRepository schedulerMemberRepository;
     private final ActivityRepository activityRepository;
     private final SchedulerActivityRepository schedulerActivityRepository;
+    private final SchedulerHotelRepository schedulerHotelRepository;
+    private final HotelRepository hotelRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -194,11 +201,34 @@ public class SchedulerService {
         Activity activity = activityRepository.findById(activityDTO.getActivityId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
 
+        if (activityDTO.getVisitStart().isBefore(scheduler.getStartDate())) {
+            throw new CustomException(ErrorCode.INVALID_START_DATE);
+        }
+
+        if (activityDTO.getVisitEnd().isAfter(scheduler.getEndDate())) {
+            throw new CustomException(ErrorCode.INVALID_END_DATE);
+        }
+
         SchedulerActivity schedulerActivity = new SchedulerActivity(
                 scheduler, activity, activityDTO.getVisitStart(), activityDTO.getVisitEnd());
         schedulerActivityRepository.save(schedulerActivity);
 
         getSchedulerResponseDTO(schedulerId, scheduler);
+    }
+
+    @Transactional
+    public void addHotelToScheduler(Long schedulerId, SchedulerHotelRequestDTO hotelDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        Hotel hotel = hotelRepository.findById(hotelDTO.getHotelId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_HOTEL));
+
+        LocalDateTime startAt = hotelDTO.getStayStart();
+        LocalDateTime endAt = hotelDTO.getStayEnd();
+
+        SchedulerHotel schedulerHotel = new SchedulerHotel(scheduler, hotel, startAt, endAt);
+        schedulerHotelRepository.save(schedulerHotel);
     }
 
 }

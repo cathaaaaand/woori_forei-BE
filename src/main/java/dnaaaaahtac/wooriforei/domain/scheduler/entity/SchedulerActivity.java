@@ -1,6 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.entity;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
+import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "SchedulerActivities")
-public class SchedulerActivity {
+public class SchedulerActivity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
