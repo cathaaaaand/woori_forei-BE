@@ -94,4 +94,15 @@ public class SchedulerController {
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러에 안내소 추가 성공", null));
     }
+
+    @PostMapping("/{schedulerId}/landmarks")
+    public ResponseEntity<CommonResponse<Void>> addLandmarkToScheduler(
+            @PathVariable Long schedulerId,
+            @RequestBody @Valid SchedulerLandmarkRequestDTO landmarkDTO) {
+
+        schedulerService.addLandmarkToScheduler(schedulerId, landmarkDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.of("스케줄러에 명소 추가 성공", null));
+    }
 }

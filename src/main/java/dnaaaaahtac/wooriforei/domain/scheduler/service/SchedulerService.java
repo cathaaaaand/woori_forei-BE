@@ -3,9 +3,11 @@ package dnaaaaahtac.wooriforei.domain.scheduler.service;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Landmark;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.HotelRepository;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.InformationRepository;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.LandmarkRepository;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.*;
@@ -35,6 +37,8 @@ public class SchedulerService {
     private final SchedulerInformationRepository schedulerInformationRepository;
     private final HotelRepository hotelRepository;
     private final UserRepository userRepository;
+    private final LandmarkRepository landmarkRepository;
+    private final SchedulerLandmarkRepository schedulerLandmarkRepository;
 
     @Transactional
     public SchedulerResponseDTO createScheduler(SchedulerRequestDTO requestDTO) {
@@ -240,5 +244,20 @@ public class SchedulerService {
                 informationDTO.getVisitEnd());
 
         schedulerInformationRepository.save(schedulerInformation);
+    }
+
+    @Transactional
+    public void addLandmarkToScheduler(Long schedulerId, SchedulerLandmarkRequestDTO landmarkDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        Landmark landmark = landmarkRepository.findById(landmarkDTO.getLandmarkId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_LANDMARK));
+
+        SchedulerLandmark schedulerLandmark = new SchedulerLandmark(
+                scheduler, landmark,
+                landmarkDTO.getVisitStart(), landmarkDTO.getVisitEnd());
+
+        schedulerLandmarkRepository.save(schedulerLandmark);
     }
 }
