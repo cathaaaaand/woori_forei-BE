@@ -221,11 +221,9 @@ public class SchedulerService {
     @Transactional
     public List<SchedulerResponseDTO> getAllSchedulers() {
         List<Scheduler> schedulers = schedulerRepository.findAll();
-
         return schedulers.stream().map(scheduler -> {
-            List<SchedulerMember> schedulerMembers
-                    = schedulerMemberRepository.findByScheduler_SchedulerId(scheduler.getSchedulerId());
-            List<UserDetailResponseDTO> memberDetails = schedulerMembers.stream()
+            List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler_SchedulerId(scheduler.getSchedulerId())
+                    .stream()
                     .map(member -> new UserDetailResponseDTO(
                             member.getUser().getUserId(),
                             member.getUser().getUsername(),
@@ -233,8 +231,9 @@ public class SchedulerService {
                             member.getUser().getEmail()))
                     .collect(Collectors.toList());
 
-            return getSchedulerResponseDTO(scheduler, memberDetails);
+            List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
+            return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
         }).collect(Collectors.toList());
     }
 
