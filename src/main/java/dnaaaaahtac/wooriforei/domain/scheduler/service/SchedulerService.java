@@ -76,6 +76,7 @@ public class SchedulerService {
         return getSchedulerResponseDTO(savedScheduler, memberDetails);
     }
 
+
     @Transactional
     public SchedulerResponseDTO getSchedulerById(Long schedulerId) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
@@ -90,18 +91,118 @@ public class SchedulerService {
                         member.getUser().getEmail()))
                 .collect(Collectors.toList());
 
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
+
+        return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
+    }
+
+    private List<SchedulerResponseDTO.OpenAPIDetailsDTO> collectOpenAPIDetails(Scheduler scheduler) {
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>();
 
+        // Activities
         List<SchedulerActivity> activities = schedulerActivityRepository.findByScheduler(scheduler);
-        for (SchedulerActivity activity : activities) {
-            SchedulerResponseDTO.OpenAPIDetailsDTO apiDetails = new SchedulerResponseDTO.OpenAPIDetailsDTO();
-            apiDetails.setId(activity.getActivity().getActivityId());
-            apiDetails.setName(activity.getActivity().getSvcnm());
-            apiDetails.setVisitStart(activity.getVisitStart());
-            apiDetails.setVisitEnd(activity.getVisitEnd());
-            apiDetails.setType("activity");
-            openAPIs.add(apiDetails);
-        }
+        openAPIs.addAll(activities.stream()
+                .map(this::convertActivityToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        // Hotels
+        List<SchedulerHotel> hotels = schedulerHotelRepository.findByScheduler(scheduler);
+        openAPIs.addAll(hotels.stream()
+                .map(this::convertHotelToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        // Information
+        List<SchedulerInformation> informations = schedulerInformationRepository.findByScheduler(scheduler);
+        openAPIs.addAll(informations.stream()
+                .map(this::convertInformationToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        // Landmarks
+        List<SchedulerLandmark> landmarks = schedulerLandmarkRepository.findByScheduler(scheduler);
+        openAPIs.addAll(landmarks.stream()
+                .map(this::convertLandmarkToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        // Restaurants
+        List<SchedulerRestaurant> restaurants = schedulerRestaurantRepository.findByScheduler(scheduler);
+        openAPIs.addAll(restaurants.stream()
+                .map(this::convertRestaurantToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        // SeoulGoods
+        List<SchedulerSeoulGoods> seoulGoodsList = schedulerSeoulGoodsRepository.findByScheduler(scheduler);
+        openAPIs.addAll(seoulGoodsList.stream()
+                .map(this::convertSeoulGoodsToOpenAPIDetails)
+                .collect(Collectors.toList()));
+
+        return openAPIs;
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertActivityToOpenAPIDetails(SchedulerActivity activity) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                activity.getActivity().getActivityId(),
+                activity.getActivity().getSvcnm(),
+                activity.getVisitStart(),
+                activity.getVisitEnd(),
+                "activity"
+        );
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertHotelToOpenAPIDetails(SchedulerHotel hotel) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                hotel.getHotel().getHotelId(),
+                hotel.getHotel().getNameKor(),
+                hotel.getStayStart(),
+                hotel.getStayEnd(),
+                "hotel"
+        );
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertInformationToOpenAPIDetails(SchedulerInformation information) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                information.getInformation().getInformationId(),
+                information.getInformation().getTrsmicnm(),
+                information.getVisitStart(),
+                information.getVisitEnd(),
+                "information"
+        );
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertLandmarkToOpenAPIDetails(SchedulerLandmark landmark) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                landmark.getLandmark().getRandmarkId(),
+                landmark.getLandmark().getPostSj(),
+                landmark.getVisitStart(),
+                landmark.getVisitEnd(),
+                "landmark"
+        );
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertRestaurantToOpenAPIDetails(SchedulerRestaurant restaurant) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                restaurant.getRestaurant().getRestaurantId(),
+                restaurant.getRestaurant().getPostSj(),
+                restaurant.getVisitStart(),
+                restaurant.getVisitEnd(),
+                "restaurant"
+        );
+    }
+
+    private SchedulerResponseDTO.OpenAPIDetailsDTO convertSeoulGoodsToOpenAPIDetails(SchedulerSeoulGoods seoulGoods) {
+        return new SchedulerResponseDTO.OpenAPIDetailsDTO(
+                seoulGoods.getSeoulGoods().getSeoulGoodsId(),
+                seoulGoods.getSeoulGoods().getNm(),
+                seoulGoods.getVisitStart(),
+                seoulGoods.getVisitEnd(),
+                "seoulGoods"
+        );
+    }
+
+
+    private SchedulerResponseDTO getSchedulerResponseDTO(
+            Scheduler scheduler,
+            List<UserDetailResponseDTO> memberDetails,
+            List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs) {
 
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
