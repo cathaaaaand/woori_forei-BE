@@ -37,6 +37,7 @@ public enum ErrorCode {
     NOT_FOUND_HOTEL(404, "요청한 호텔을 찾을 수 없습니다."),
     NOT_FOUND_INFORMATION(404, "요청한 안내소를 찾을 수 없습니다."),
     NOT_FOUND_LANDMARK(404, "요청한 명소를 찾을 수 없습니다."),
+    NOT_FOUND_RESTAURANT(404, "요청한 맛집을 찾을 수 없습니다."),
 
     //OpenAPI
     NOT_FOUND_DATA(404, "데이터가 존재하지 않습니다."),

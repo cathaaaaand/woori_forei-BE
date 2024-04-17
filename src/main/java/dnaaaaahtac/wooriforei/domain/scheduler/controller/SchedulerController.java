@@ -105,4 +105,14 @@ public class SchedulerController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러에 명소 추가 성공", null));
     }
+
+    @PostMapping("/{schedulerId}/restaurants")
+    public ResponseEntity<CommonResponse<Void>> addRestaurantToScheduler(
+            @PathVariable Long schedulerId,
+            @RequestBody SchedulerRestaurantRequestDTO restaurantDTO) {
+
+        schedulerService.addRestaurantToScheduler(schedulerId, restaurantDTO);
+
+        return ResponseEntity.ok(CommonResponse.of("스케줄러에 맛집 추가 성공", null));
+    }
 }

@@ -1,13 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.service;
 
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
-import dnaaaaahtac.wooriforei.domain.openapi.entity.Landmark;
-import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
-import dnaaaaahtac.wooriforei.domain.openapi.repository.HotelRepository;
-import dnaaaaahtac.wooriforei.domain.openapi.repository.InformationRepository;
-import dnaaaaahtac.wooriforei.domain.openapi.repository.LandmarkRepository;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.*;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.entity.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.repository.*;
@@ -39,6 +33,8 @@ public class SchedulerService {
     private final UserRepository userRepository;
     private final LandmarkRepository landmarkRepository;
     private final SchedulerLandmarkRepository schedulerLandmarkRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final SchedulerRestaurantRepository schedulerRestaurantRepository;
 
     @Transactional
     public SchedulerResponseDTO createScheduler(SchedulerRequestDTO requestDTO) {
@@ -259,5 +255,22 @@ public class SchedulerService {
                 landmarkDTO.getVisitStart(), landmarkDTO.getVisitEnd());
 
         schedulerLandmarkRepository.save(schedulerLandmark);
+    }
+
+    @Transactional
+    public void addRestaurantToScheduler(Long schedulerId, SchedulerRestaurantRequestDTO restaurantDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantDTO.getRestaurantId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESTAURANT));
+
+        SchedulerRestaurant schedulerRestaurant = new SchedulerRestaurant(
+                scheduler,
+                restaurant,
+                restaurantDTO.getVisitStart(),
+                restaurantDTO.getVisitEnd());
+
+        schedulerRestaurantRepository.save(schedulerRestaurant);
     }
 }
