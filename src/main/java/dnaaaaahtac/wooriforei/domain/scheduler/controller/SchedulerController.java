@@ -1,9 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.controller;
 
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerActivityRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerHotelRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import jakarta.validation.Valid;
@@ -86,5 +83,15 @@ public class SchedulerController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러에 호텔 추가 성공", null));
+    }
+
+    @PostMapping("/{schedulerId}/information")
+    public ResponseEntity<CommonResponse<Void>> addInformationToScheduler(
+            @PathVariable Long schedulerId,
+            @RequestBody SchedulerInformationRequestDTO informationDTO) {
+
+        schedulerService.addInformationToScheduler(schedulerId, informationDTO);
+
+        return ResponseEntity.ok(CommonResponse.of("스케줄러에 안내소 추가 성공", null));
     }
 }

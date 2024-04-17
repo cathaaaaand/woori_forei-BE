@@ -2,20 +2,13 @@ package dnaaaaahtac.wooriforei.domain.scheduler.service;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Hotel;
+import dnaaaaahtac.wooriforei.domain.openapi.entity.Information;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.ActivityRepository;
 import dnaaaaahtac.wooriforei.domain.openapi.repository.HotelRepository;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerActivityRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerHotelRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerRequestDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.dto.SchedulerResponseDTO;
-import dnaaaaahtac.wooriforei.domain.scheduler.entity.Scheduler;
-import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerActivity;
-import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerHotel;
-import dnaaaaahtac.wooriforei.domain.scheduler.entity.SchedulerMember;
-import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerActivityRepository;
-import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerHotelRepository;
-import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerMemberRepository;
-import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerRepository;
+import dnaaaaahtac.wooriforei.domain.openapi.repository.InformationRepository;
+import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
+import dnaaaaahtac.wooriforei.domain.scheduler.entity.*;
+import dnaaaaahtac.wooriforei.domain.scheduler.repository.*;
 import dnaaaaahtac.wooriforei.domain.user.dto.UserDetailResponseDTO;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
@@ -38,6 +31,8 @@ public class SchedulerService {
     private final ActivityRepository activityRepository;
     private final SchedulerActivityRepository schedulerActivityRepository;
     private final SchedulerHotelRepository schedulerHotelRepository;
+    private final InformationRepository informationRepository;
+    private final SchedulerInformationRepository schedulerInformationRepository;
     private final HotelRepository hotelRepository;
     private final UserRepository userRepository;
 
@@ -231,4 +226,19 @@ public class SchedulerService {
         schedulerHotelRepository.save(schedulerHotel);
     }
 
+    @Transactional
+    public void addInformationToScheduler(Long schedulerId, SchedulerInformationRequestDTO informationDTO) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+        Information information = informationRepository.findById(informationDTO.getInformationId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INFORMATION));
+
+        SchedulerInformation schedulerInformation = new SchedulerInformation(
+                scheduler,
+                information,
+                informationDTO.getVisitStart(),
+                informationDTO.getVisitEnd());
+
+        schedulerInformationRepository.save(schedulerInformation);
+    }
 }
