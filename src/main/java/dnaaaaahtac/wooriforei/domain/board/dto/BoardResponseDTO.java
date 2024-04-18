@@ -2,7 +2,6 @@ package dnaaaaahtac.wooriforei.domain.board.dto;
 
 import dnaaaaahtac.wooriforei.domain.board.entity.Board;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -11,12 +10,19 @@ import java.time.LocalDateTime;
 public class BoardResponseDTO {
 
     private Long boardId;
+
     private String title;
+
     private String content;
+
     private String image;
+
     private Long userId;
+
     private String nickname;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime modifiedAt;
 
     public BoardResponseDTO(Board board) {
