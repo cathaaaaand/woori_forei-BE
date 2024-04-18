@@ -41,5 +41,21 @@ jobs:
           port: 22
           script_stop: true
           script: |
-             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}')
-             nohup java -jar *.jar 1> /dev/null 2>&1 &
+              export PROD_DB_URL=${{ secrets.PROD_DB_URL }}
+              export PROD_DB_USER=${{ secrets.PROD_DB_USER }}
+              export PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
+              export ADMIN_SECRET_CODE=${{ secrets.ADMIN_SECRET_CODE }}
+              export AUTH_KEY=${{ secrets.AUTH_KEY }}
+              export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+              export GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}
+              export GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}
+              java -jar *.jar
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_USER }}
+          PROD_DB_USER: ${{ secrets.PROD_DB_USER }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          ADMIN_SECRET_CODE: ${{ secrets.ADMIN_SECRET_CODE }}
+          AUTH_KEY: ${{ secrets.AUTH_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
