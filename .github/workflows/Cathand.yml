@@ -49,7 +49,7 @@ jobs:
               export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
               export GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}
               export GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}
-              java -jar *.jar
+              java -jar *.jar &
         env:
           PROD_DB_URL: ${{ secrets.PROD_DB_USER }}
           PROD_DB_USER: ${{ secrets.PROD_DB_USER }}
