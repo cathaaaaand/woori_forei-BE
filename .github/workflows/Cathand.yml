@@ -41,4 +41,13 @@ jobs:
           port: 22
           script_stop: true
           script: |
-             java -jar *.jar
+              export PROD_DB_URL=${{ secrets.PROD_DB_URL }}
+              export PROD_DB_URL=${{ secrets.PROD_DB_USER }}
+              export PROD_DB_URL=${{ secrets.PROD_DB_PASSWORD }}
+              export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+              java -jar *.jar
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_USER }}
+          PROD_DB_USER: ${{ secrets.PROD_DB_USER }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
