@@ -42,4 +42,7 @@ jobs:
           script_stop: true
           script: |
              export JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+             export PROD_DB_URL=${{ secrets.PROD_DB_URL }}
+             export PROD_DB_URL=${{ secrets.PROD_DB_USER }}
+             export PROD_DB_URL=${{ secrets.PROD_DB_PASSWORD }}
              java -jar *.jar
