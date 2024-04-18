@@ -43,3 +43,4 @@ jobs:
           script: |
              kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}')
              nohup java -jar *.jar 1> /dev/null 2>&1 &
+          debug: true
