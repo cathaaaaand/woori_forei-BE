@@ -1,4 +1,4 @@
-name: Cathand
+name: CatHand
 
 on:
   workflow_dispatch:
