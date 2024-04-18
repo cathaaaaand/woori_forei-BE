@@ -1,6 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.entity;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Activity;
+import dnaaaaahtac.wooriforei.domain.scheduler.Schedulable;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "SchedulerActivities")
-public class SchedulerActivity extends BaseTimeEntity {
+public class SchedulerActivity extends BaseTimeEntity implements Schedulable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,5 +59,20 @@ public class SchedulerActivity extends BaseTimeEntity {
 
     public void setVisitEnd(LocalDateTime visitEnd) {
         this.visitEnd = visitEnd;
+    }
+
+    @Override
+    public Long getEventId() {
+        return this.schedulerActivityId;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return this.visitStart;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return this.visitEnd;
     }
 }

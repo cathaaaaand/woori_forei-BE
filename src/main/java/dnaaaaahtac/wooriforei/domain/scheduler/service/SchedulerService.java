@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,43 +98,36 @@ public class SchedulerService {
     }
 
     private List<SchedulerResponseDTO.OpenAPIDetailsDTO> collectOpenAPIDetails(Scheduler scheduler) {
-        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>();
 
-        // Activities
         List<SchedulerActivity> activities = schedulerActivityRepository.findByScheduler(scheduler);
-        openAPIs.addAll(activities.stream()
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>(activities.stream()
                 .map(this::convertActivityToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
-        // Hotels
         List<SchedulerHotel> hotels = schedulerHotelRepository.findByScheduler(scheduler);
         openAPIs.addAll(hotels.stream()
                 .map(this::convertHotelToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
-        // Information
         List<SchedulerInformation> informations = schedulerInformationRepository.findByScheduler(scheduler);
         openAPIs.addAll(informations.stream()
                 .map(this::convertInformationToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
-        // Landmarks
         List<SchedulerLandmark> landmarks = schedulerLandmarkRepository.findByScheduler(scheduler);
         openAPIs.addAll(landmarks.stream()
                 .map(this::convertLandmarkToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
-        // Restaurants
         List<SchedulerRestaurant> restaurants = schedulerRestaurantRepository.findByScheduler(scheduler);
         openAPIs.addAll(restaurants.stream()
                 .map(this::convertRestaurantToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
-        // SeoulGoods
         List<SchedulerSeoulGoods> seoulGoodsList = schedulerSeoulGoodsRepository.findByScheduler(scheduler);
         openAPIs.addAll(seoulGoodsList.stream()
                 .map(this::convertSeoulGoodsToOpenAPIDetails)
-                .collect(Collectors.toList()));
+                .toList());
 
         return openAPIs;
     }
@@ -303,6 +297,7 @@ public class SchedulerService {
 
 
     private SchedulerResponseDTO getSchedulerResponseDTO(Scheduler scheduler, List<UserDetailResponseDTO> memberDetails) {
+
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
         response.setSchedulerName(scheduler.getSchedulerName());
@@ -332,6 +327,8 @@ public class SchedulerService {
         Activity activity = activityRepository.findById(activityDTO.getActivityId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
 
+        checkForTimeConflicts(scheduler, activityDTO.getVisitStart(), activityDTO.getVisitEnd(), activityDTO.getActivityId());
+
         if (activityDTO.getVisitStart().isBefore(scheduler.getStartDate())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
         }
@@ -352,6 +349,8 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
+        checkForTimeConflicts(scheduler, hotelDTO.getStayStart(), hotelDTO.getStayEnd(), hotelDTO.getHotelId());
+
         Hotel hotel = hotelRepository.findById(hotelDTO.getHotelId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_HOTEL));
 
@@ -366,6 +365,9 @@ public class SchedulerService {
     public void addInformationToScheduler(Long schedulerId, SchedulerInformationRequestDTO informationDTO) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        checkForTimeConflicts(scheduler, informationDTO.getVisitStart(), informationDTO.getVisitEnd(), informationDTO.getInformationId());
+
         Information information = informationRepository.findById(informationDTO.getInformationId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INFORMATION));
 
@@ -383,6 +385,8 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
+        checkForTimeConflicts(scheduler, landmarkDTO.getVisitStart(), landmarkDTO.getVisitEnd(), landmarkDTO.getLandmarkId());
+
         Landmark landmark = landmarkRepository.findById(landmarkDTO.getLandmarkId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_LANDMARK));
 
@@ -397,6 +401,8 @@ public class SchedulerService {
     public void addRestaurantToScheduler(Long schedulerId, SchedulerRestaurantRequestDTO restaurantDTO) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        checkForTimeConflicts(scheduler, restaurantDTO.getVisitStart(), restaurantDTO.getVisitEnd(), restaurantDTO.getRestaurantId());
 
         Restaurant restaurant = restaurantRepository.findById(restaurantDTO.getRestaurantId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESTAURANT));
@@ -415,6 +421,8 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
+        checkForTimeConflicts(scheduler, seoulGoodsDTO.getVisitStart(), seoulGoodsDTO.getVisitEnd(), seoulGoodsDTO.getGoodsId());
+
         SeoulGoods seoulGoods = seoulGoodsRepository.findById(seoulGoodsDTO.getGoodsId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SEOUL_GOODS));
 
@@ -426,4 +434,15 @@ public class SchedulerService {
 
         schedulerSeoulGoodsRepository.save(schedulerSeoulGoods);
     }
+
+    private void checkForTimeConflicts(Scheduler scheduler, LocalDateTime start, LocalDateTime end, Long entityId) {
+        boolean hasConflict = scheduler.getEvents().stream()
+                .anyMatch(event -> !Objects.equals(event.getEventId(), entityId) &&
+                        event.getStartTime().isBefore(end) &&
+                        event.getEndTime().isAfter(start));
+        if (hasConflict) {
+            throw new CustomException(ErrorCode.INVALID_TIME_OVERLAP);
+        }
+    }
+
 }

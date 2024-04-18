@@ -1,6 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.entity;
 
 import dnaaaaahtac.wooriforei.domain.openapi.entity.Landmark;
+import dnaaaaahtac.wooriforei.domain.scheduler.Schedulable;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "SchedulerLandmarks")
-public class SchedulerLandmark extends BaseTimeEntity {
+public class SchedulerLandmark extends BaseTimeEntity implements Schedulable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,5 +68,20 @@ public class SchedulerLandmark extends BaseTimeEntity {
 
     public void setVisitEnd(LocalDateTime visitEnd) {
         this.visitEnd = visitEnd;
+    }
+
+    @Override
+    public Long getEventId() {
+        return this.id;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return this.visitStart;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return this.visitEnd;
     }
 }
