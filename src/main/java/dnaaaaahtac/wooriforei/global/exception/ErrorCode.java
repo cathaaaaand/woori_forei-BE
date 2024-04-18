@@ -24,6 +24,12 @@ public enum ErrorCode {
     EMAIL_NOT_VERIFIED(400, "이메일이 인증되지 않았습니다."),
 
     // Board
+    NOT_FOUND_BOARD(404,"해당 게시글을 찾을 수 없습니다."),
+    TITLE_TOO_LONG(400,"제목은 255자를 초과할 수 없습니다."),
+    CONTENT_TOO_LONG(400,"내용은 1000자를 초과할 수 없습니다."),
+    TITLE_REQUIRED(400,"제목을 입력해주세요."),
+    CONTENT_REQUIRED(400,"내용을 입력해주세요."),
+    FORBIDDEN_WORK(403,"이 작업을 수행할 권한이 없습니다."),
 
     // Comment
 
