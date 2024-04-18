@@ -40,4 +40,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script_stop: true
-          script: uptime
+          script: |
+             java -jar *.jar
