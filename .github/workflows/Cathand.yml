@@ -41,5 +41,5 @@ jobs:
           port: 22
           script_stop: true
           script: |
-             export JWT_SECRET_KEY=$JWT_SECRET_KEY
+             export JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
              java -jar *.jar
