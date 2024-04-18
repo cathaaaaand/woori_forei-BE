@@ -30,6 +30,16 @@ public enum ErrorCode {
     // Faq
 
     // Scheduler
+    INVALID_START_DATE(400, "시작일이 현재 시간 이전일 수 없습니다."),
+    INVALID_END_DATE(400, "종료일이 시작일 이전일 수 없습니다."),
+    NOT_FOUND_SCHEDULER(404, "요청한 스케줄러를 찾을 수 없습니다."),
+    NOT_FOUND_ACTIVITY(404, "요청한 문화 체험을 찾을 수 없습니다."),
+    NOT_FOUND_HOTEL(404, "요청한 호텔을 찾을 수 없습니다."),
+    NOT_FOUND_INFORMATION(404, "요청한 안내소를 찾을 수 없습니다."),
+    NOT_FOUND_LANDMARK(404, "요청한 명소를 찾을 수 없습니다."),
+    NOT_FOUND_RESTAURANT(404, "요청한 맛집을 찾을 수 없습니다."),
+    NOT_FOUND_SEOUL_GOODS(404, "요청한 기념품판매소를 찾을 수 없습니다."),
+    INVALID_TIME_OVERLAP(409, "요청한 시간이 기존의 일정과 겹칩니다."),
 
     //OpenAPI
     NOT_FOUND_DATA(404, "데이터가 존재하지 않습니다."),
