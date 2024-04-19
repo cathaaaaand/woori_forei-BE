@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AwsController {
 
-    @GetMapping("/aws")
+    @GetMapping("/health")
     public ResponseEntity<CommonResponse<Void>> awsfucking() {
 
         return ResponseEntity.ok().body(CommonResponse.of("awsfucking", null));
