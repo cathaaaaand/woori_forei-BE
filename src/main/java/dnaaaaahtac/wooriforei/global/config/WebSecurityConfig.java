@@ -48,11 +48,10 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations()))
                         .permitAll()
-/*                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
-                        .requestMatchers("/aws").permitAll()*/
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/aws").permitAll()
                         .anyRequest().authenticated()
         );
 
