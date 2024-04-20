@@ -42,8 +42,8 @@ jobs:
                   value: ${{ secrets.PROD_DB_PASSWORD }}
                 - name: PROD_DB_URL
                   value: ${{ secrets.PROD_DB_URL }}
-                - name: ${{ secrets.PROD_DB_USER }}
-                  value: root
+                - name: PROD_DB_USER
+                  value: ${{ secrets.PROD_DB_USER }}
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
