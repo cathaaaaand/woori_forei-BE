@@ -39,6 +39,14 @@ public class FaqService {
         return convertToResponseDTO(faq);
     }
 
+    public FaqResponseDTO getFaqById(Long faqId) {
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        return convertToResponseDTO(faq);
+    }
+
     private FaqResponseDTO convertToResponseDTO(Faq faq) {
 
         FaqResponseDTO dto = new FaqResponseDTO();
