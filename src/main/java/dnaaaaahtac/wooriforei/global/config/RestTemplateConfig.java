@@ -15,8 +15,8 @@ public class RestTemplateConfig {
 
         // 외부 API 호출 시 30초가 지나도 응답이 없을 때 강제 종료
         return restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(30))
-                .setReadTimeout(Duration.ofSeconds(30))
+                .setConnectTimeout(Duration.ofSeconds(60))
+                .setReadTimeout(Duration.ofSeconds(60))
                 .build();
     }
 }
