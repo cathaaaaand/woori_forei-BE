@@ -113,4 +113,8 @@ public class User extends BaseTimeEntity {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
 }
