@@ -1,0 +1,51 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: wooriforei/woori-forei-be
+          stage: main
+          yaml: >
+            name: woori-forei-be
+
+            app: java@17
+
+            options:
+              ports: ""
+              env:
+                - name: ADMIN_SECRET_CODE
+                  value: ${{ secrets.ADMIN_SECRET_CODE }}
+                - name: AUTH_KEY
+                  value: ${{ secrets.AUTH_KEY }}
+                - name: GMAIL_PASSWORD
+                  value: ${{ secrets.GMAIL_PASSWORD }}
+                - name: GMAIL_USERNAME
+                  value: ${{ secrets.GMAIL_USERNAME }}
+                - name: JWT_SECRET_KEY
+                  value: ${{ secrets.JWT_SECRET_KEY }}
+                - name: PROD_DB_PASSWORD
+                  value: ${{ secrets.PROD_DB_PASSWORD }}
+                - name: PROD_DB_URL
+                  value: ${{ secrets.PROD_DB_URL }}
+                - name: PROD_DB_USER
+                  value: ${{ secrets.PROD_DB_USER }}
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+              preset: java-springboot

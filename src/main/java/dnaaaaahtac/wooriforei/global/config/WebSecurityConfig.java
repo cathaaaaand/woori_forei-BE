@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
+                        .requestMatchers("/aws").permitAll()
                         .anyRequest().authenticated()
         );
 
