@@ -52,6 +52,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
                         .requestMatchers("/aws").permitAll()
+                        .requestMatchers("/https://port-0-woori-forei-be-2aat2llv837pcn.sel5.cloudtype.app/").permitAll()
                         .anyRequest().authenticated()
         );
 
