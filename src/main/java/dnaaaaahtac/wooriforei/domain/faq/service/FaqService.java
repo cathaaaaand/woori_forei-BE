@@ -78,6 +78,22 @@ public class FaqService {
         return convertToResponseDTO(faq);
     }
 
+    @Transactional
+    public void deleteFaq(Long faqId, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!user.isAdmin()) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        faqRepository.deleteById(faqId);
+    }
+
     private FaqResponseDTO convertToResponseDTO(Faq faq) {
 
         FaqResponseDTO dto = new FaqResponseDTO();

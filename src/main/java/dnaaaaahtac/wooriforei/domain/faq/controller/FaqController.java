@@ -68,4 +68,18 @@ public class FaqController {
         return ResponseEntity.ok()
                 .body(CommonResponse.of("FAQ 수정 성공", updatedFaq));
     }
+
+    @DeleteMapping("/{faqId}")
+    public ResponseEntity<CommonResponse<FaqResponseDTO>> deleteFaq(
+            @PathVariable Long faqId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+
+        faqService.deleteFaq(faqId, userId);
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.of("FAQ 삭제 성공", null));
+    }
 }
