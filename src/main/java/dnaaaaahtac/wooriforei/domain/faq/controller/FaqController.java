@@ -53,4 +53,19 @@ public class FaqController {
         return ResponseEntity.ok()
                 .body(CommonResponse.of("FAQ 전체 조회 성공", faqs));
     }
+
+    @PutMapping("/{faqId}")
+    public ResponseEntity<CommonResponse<FaqResponseDTO>> updateFaq(
+            @PathVariable Long faqId,
+            @RequestBody @Validated FaqRequestDTO faqRequestDTO) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+
+        FaqResponseDTO updatedFaq = faqService.updateFaq(faqId, faqRequestDTO, userId);
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.of("FAQ 수정 성공", updatedFaq));
+    }
 }

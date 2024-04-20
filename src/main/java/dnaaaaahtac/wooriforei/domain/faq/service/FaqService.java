@@ -57,6 +57,27 @@ public class FaqService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public FaqResponseDTO updateFaq(Long faqId, FaqRequestDTO faqRequestDTO, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!user.isAdmin()) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        faq.setFaqTitle(faqRequestDTO.getFaqTitle());
+        faq.setFaqContent(faqRequestDTO.getFaqContent());
+        faq.setUserId(userId);
+        faq = faqRepository.save(faq);
+
+        return convertToResponseDTO(faq);
+    }
+
     private FaqResponseDTO convertToResponseDTO(Faq faq) {
 
         FaqResponseDTO dto = new FaqResponseDTO();
