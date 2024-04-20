@@ -18,7 +18,7 @@ jobs:
         uses: cloudtype-github-actions/deploy@v1
         with:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: wooriforei/woori-forei-be
+          project: cathand/woori-forei-be
           stage: main
           yaml: >
             name: woori-forei-be
@@ -26,8 +26,14 @@ jobs:
             app: java@17
 
             options:
-              ports: "8080"
+              ports: 8080
               env:
+                - name: PROD_DB_PASSWORD
+                  value: ${{ secrets.PROD_DB_PASSWORD }}
+                - name: PROD_DB_URL
+                  value: ${{ secrets.PROD_DB_URL }}
+                - name: PROD_DB_USER
+                  value: ${{ secrets.PROD_DB_USER }}
                 - name: ADMIN_SECRET_CODE
                   value: ${{ secrets.ADMIN_SECRET_CODE }}
                 - name: AUTH_KEY
@@ -38,12 +44,6 @@ jobs:
                   value: ${{ secrets.GMAIL_USERNAME }}
                 - name: JWT_SECRET_KEY
                   value: ${{ secrets.JWT_SECRET_KEY }}
-                - name: PROD_DB_PASSWORD
-                  value: ${{ secrets.PROD_DB_PASSWORD }}
-                - name: PROD_DB_URL
-                  value: ${{ secrets.PROD_DB_URL }}
-                - name: PROD_DB_USER
-                  value: ${{ secrets.PROD_DB_USER }}
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
