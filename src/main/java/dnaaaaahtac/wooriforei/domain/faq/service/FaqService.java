@@ -12,6 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class FaqService {
@@ -37,6 +40,58 @@ public class FaqService {
         faq = faqRepository.save(faq);
 
         return convertToResponseDTO(faq);
+    }
+
+    public FaqResponseDTO getFaqById(Long faqId) {
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        return convertToResponseDTO(faq);
+    }
+
+    public List<FaqResponseDTO> getAllFaqs() {
+
+        return faqRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public FaqResponseDTO updateFaq(Long faqId, FaqRequestDTO faqRequestDTO, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!user.isAdmin()) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        faq.setFaqTitle(faqRequestDTO.getFaqTitle());
+        faq.setFaqContent(faqRequestDTO.getFaqContent());
+        faq.setUserId(userId);
+        faq = faqRepository.save(faq);
+
+        return convertToResponseDTO(faq);
+    }
+
+    @Transactional
+    public void deleteFaq(Long faqId, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        if (!user.isAdmin()) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_ACCESS);
+        }
+
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() ->
+                new CustomException(ErrorCode.NOT_FOUND_FAQ));
+
+        faqRepository.deleteById(faqId);
     }
 
     private FaqResponseDTO convertToResponseDTO(Faq faq) {
