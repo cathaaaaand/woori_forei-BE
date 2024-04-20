@@ -12,6 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class FaqService {
@@ -45,6 +48,13 @@ public class FaqService {
                 new CustomException(ErrorCode.NOT_FOUND_FAQ));
 
         return convertToResponseDTO(faq);
+    }
+
+    public List<FaqResponseDTO> getAllFaqs() {
+
+        return faqRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     private FaqResponseDTO convertToResponseDTO(Faq faq) {

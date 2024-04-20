@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/faqs")
@@ -41,5 +43,14 @@ public class FaqController {
         FaqResponseDTO faq = faqService.getFaqById(faqId);
 
         return ResponseEntity.ok(CommonResponse.of("FAQ 단일 조회 성공", faq));
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<FaqResponseDTO>>> getAllFaqs() {
+
+        List<FaqResponseDTO> faqs = faqService.getAllFaqs();
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.of("FAQ 전체 조회 성공", faqs));
     }
 }
