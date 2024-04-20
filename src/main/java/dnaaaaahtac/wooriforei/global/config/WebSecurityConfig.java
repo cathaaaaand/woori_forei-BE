@@ -47,10 +47,11 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations()))
                         .permitAll()
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/faqs/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
-                        .requestMatchers("/aws/**").permitAll()
+                        .requestMatchers("/aws").permitAll()
                         .anyRequest().authenticated()
         );
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
