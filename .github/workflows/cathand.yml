@@ -26,7 +26,7 @@ jobs:
             app: java@17
 
             options:
-              ports: ""
+              ports: "8080"
               env:
                 - name: ADMIN_SECRET_CODE
                   value: ${{ secrets.ADMIN_SECRET_CODE }}
