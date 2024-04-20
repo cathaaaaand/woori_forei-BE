@@ -15,8 +15,8 @@ public class AwsController {
     }
 
     @GetMapping("/")
-    public String welcome() {
-        return "Welcome to the wooriForei Backend API!";
-    }
+    public ResponseEntity<CommonResponse<Void>> wooriforei() {
 
+        return ResponseEntity.ok().body(CommonResponse.of("hello wooriforei", null));
+    }
 }
