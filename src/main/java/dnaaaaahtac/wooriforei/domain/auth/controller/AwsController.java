@@ -14,10 +14,9 @@ public class AwsController {
         return ResponseEntity.ok().body(CommonResponse.of("awsfucking", null));
     }
 
-    @GetMapping("/aws/fucking")
-    public ResponseEntity<CommonResponse<Void>> awsfucking2() {
-
-        return ResponseEntity.ok().body(CommonResponse.of("awsfucking2", null));
+    @GetMapping("/")
+    public String welcome() {
+        return "Welcome to the wooriForei Backend API!";
     }
 
 }
