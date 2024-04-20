@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -36,14 +39,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // CSRF 설정
         http.csrf(AbstractHttpConfigurer::disable);
-
-        // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
-
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations()))
@@ -52,14 +51,16 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
                         .requestMatchers("/aws").permitAll()
-                        .requestMatchers("/https://port-0-woori-forei-be-2aat2llv837pcn.sel5.cloudtype.app/").permitAll()
                         .anyRequest().authenticated()
         );
-
-
-        // 필터 처리
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http.cors().configurationSource(request -> {
+            CorsConfiguration cors = new CorsConfiguration();
+            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedHeaders(List.of("*"));
+            return cors;
+        });
         return http.build();
     }
 }
