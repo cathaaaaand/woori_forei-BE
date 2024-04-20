@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/faqs/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
-                        .requestMatchers("/aws").permitAll()
+                        .requestMatchers("/aws/**").permitAll()
                         .anyRequest().authenticated()
         );
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
