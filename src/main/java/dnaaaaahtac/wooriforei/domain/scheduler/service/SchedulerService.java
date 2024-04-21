@@ -77,7 +77,6 @@ public class SchedulerService {
         return getSchedulerResponseDTO(savedScheduler, memberDetails);
     }
 
-
     @Transactional
     public SchedulerResponseDTO getSchedulerById(Long schedulerId) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
@@ -98,7 +97,6 @@ public class SchedulerService {
     }
 
     private List<SchedulerResponseDTO.OpenAPIDetailsDTO> collectOpenAPIDetails(Scheduler scheduler) {
-
         List<SchedulerActivity> activities = schedulerActivityRepository.findByScheduler(scheduler);
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>(activities.stream()
                 .map(this::convertActivityToOpenAPIDetails)
@@ -162,6 +160,7 @@ public class SchedulerService {
         );
     }
 
+
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertLandmarkToOpenAPIDetails(SchedulerLandmark landmark) {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 landmark.getLandmark().getRandmarkId(),
@@ -191,7 +190,6 @@ public class SchedulerService {
                 "seoulGoods"
         );
     }
-
 
     private SchedulerResponseDTO getSchedulerResponseDTO(
             Scheduler scheduler,
@@ -254,15 +252,10 @@ public class SchedulerService {
         }
 
         updateSchedulerMembers(scheduler, requestDTO.getMemberEmails());
-
         schedulerRepository.save(scheduler);
 
-        return getSchedulerResponseDTO(schedulerId, scheduler);
-    }
-
-    private SchedulerResponseDTO getSchedulerResponseDTO(Long schedulerId, Scheduler scheduler) {
-        List<SchedulerMember> schedulerMembers = schedulerMemberRepository.findByScheduler_SchedulerId(schedulerId);
-        List<UserDetailResponseDTO> memberDetails = schedulerMembers.stream()
+        List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
+                .stream()
                 .map(member -> new UserDetailResponseDTO(
                         member.getUser().getUserId(),
                         member.getUser().getUsername(),
@@ -270,18 +263,46 @@ public class SchedulerService {
                         member.getUser().getEmail()))
                 .collect(Collectors.toList());
 
-        return getSchedulerResponseDTO(scheduler, memberDetails);
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
+
+        return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
     }
 
+
+    private SchedulerResponseDTO getSchedulerResponseDTO(Scheduler scheduler) {
+        List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
+                .stream()
+                .map(member -> new UserDetailResponseDTO(
+                        member.getUser().getUserId(),
+                        member.getUser().getUsername(),
+                        member.getUser().getNickname(),
+                        member.getUser().getEmail()))
+                .collect(Collectors.toList());
+
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
+
+        SchedulerResponseDTO response = new SchedulerResponseDTO();
+        response.setSchedulerId(scheduler.getSchedulerId());
+        response.setSchedulerName(scheduler.getSchedulerName());
+        response.setStartDate(scheduler.getStartDate());
+        response.setEndDate(scheduler.getEndDate());
+        response.setCreatedAt(scheduler.getCreatedAt());
+        response.setModifiedAt(scheduler.getModifiedAt());
+        response.setMembers(memberDetails);
+        response.setOpenAPIs(openAPIs);
+
+        return response;
+    }
+
+
     private void updateSchedulerMembers(Scheduler scheduler, List<String> memberEmails) {
-        if (memberEmails == null) return;  // 멤버 변경이 없으면 로직을 수행하지 않음
+        if (memberEmails == null) return;
 
         List<SchedulerMember> existingMembers = schedulerMemberRepository.findByScheduler(scheduler);
         List<String> existingEmails = existingMembers.stream()
                 .map(member -> member.getUser().getEmail())
                 .toList();
 
-        // 새 멤버 추가
         memberEmails.forEach(email -> {
             if (!existingEmails.contains(email)) {
                 User user = userRepository.findByEmail(email)
@@ -341,7 +362,7 @@ public class SchedulerService {
                 scheduler, activity, activityDTO.getVisitStart(), activityDTO.getVisitEnd());
         schedulerActivityRepository.save(schedulerActivity);
 
-        getSchedulerResponseDTO(schedulerId, scheduler);
+        getSchedulerResponseDTO(scheduler);
     }
 
     @Transactional
@@ -434,6 +455,32 @@ public class SchedulerService {
 
         schedulerSeoulGoodsRepository.save(schedulerSeoulGoods);
     }
+
+    @Transactional
+    public SchedulerResponseDTO addMemberToScheduler(Long schedulerId, String userEmail) {
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        SchedulerMember member = new SchedulerMember(scheduler, user);
+        schedulerMemberRepository.save(member);
+
+        List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
+                .stream()
+                .map(mem -> new UserDetailResponseDTO(
+                        mem.getUser().getUserId(),
+                        mem.getUser().getUsername(),
+                        mem.getUser().getNickname(),
+                        mem.getUser().getEmail()))
+                .collect(Collectors.toList());
+
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
+
+        return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
+    }
+
 
     private void checkForTimeConflicts(Scheduler scheduler, LocalDateTime start, LocalDateTime end, Long entityId) {
         boolean hasConflict = scheduler.getEvents().stream()

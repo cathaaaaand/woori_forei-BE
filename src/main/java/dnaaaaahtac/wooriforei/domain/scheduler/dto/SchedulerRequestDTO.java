@@ -11,6 +11,8 @@ import java.util.List;
 @Getter
 public class SchedulerRequestDTO {
 
+    private Long schedulerId;
+
     @NotBlank(message = "스케줄러 이름은 필수입니다.", groups = Create.class)
     @Size(min = 1, message = "스케줄러 이름은 최소 1글자 이상이어야 합니다.", groups = Update.class)
     private String schedulerName;
@@ -22,6 +24,10 @@ public class SchedulerRequestDTO {
     private LocalDateTime endDate;
 
     private List<String> memberEmails;
+
+    public void setSchedulerId(Long schedulerId) {
+        this.schedulerId = schedulerId;
+    }
 
     public interface Create {
     }

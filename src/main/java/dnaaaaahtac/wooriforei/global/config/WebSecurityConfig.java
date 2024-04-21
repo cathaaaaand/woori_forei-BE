@@ -40,6 +40,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+//        http.csrf().disable();
         http.sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
@@ -51,13 +52,14 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/faqs/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/aws").permitAll()
                         .anyRequest().authenticated()
         );
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.cors().configurationSource(request -> {
             CorsConfiguration cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("https://port-0-woori-forei-be-2aat2llv837pcn.sel5.cloudtype.app/"));
+            cors.setAllowedOrigins(List.of("http://localhost:8080"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
