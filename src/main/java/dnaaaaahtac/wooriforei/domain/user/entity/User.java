@@ -3,8 +3,10 @@ package dnaaaaahtac.wooriforei.domain.user.entity;
 import dnaaaaahtac.wooriforei.domain.image.entity.Image;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 
+@Data
 @Entity
 @Getter
 @Table(name = "users")
@@ -55,6 +57,11 @@ public class User extends BaseTimeEntity {
 
     @Column(length = 100)
     private String nation;
+
+    public Long getId() {
+        return userId;
+    }
+
 
     public void setUserId(Long userId) {
         this.userId = userId;

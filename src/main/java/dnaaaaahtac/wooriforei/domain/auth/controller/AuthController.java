@@ -1,9 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.auth.controller;
 
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.LoginResponseDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.RegisterRequestDTO;
-import dnaaaaahtac.wooriforei.domain.auth.dto.VerificationEmailCodeRequestDTO;
+import dnaaaaahtac.wooriforei.domain.auth.dto.*;
 import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.domain.auth.service.EmailVerificationService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
@@ -14,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -70,4 +64,15 @@ public class AuthController {
 
         return ResponseEntity.ok(CommonResponse.of("이메일 인증 성공", null));
     }
+
+    @GetMapping("/google-login")
+    public ResponseEntity<CommonResponse<GoogleLoginResponseDTO>> googleLogin(
+            @RequestParam("code") String code) {
+
+        GoogleLoginResponseDTO responseDTO = authService.googleLogin(code);
+
+        return ResponseEntity.ok().body(CommonResponse.of("구글 로그인 성공", responseDTO));
+    }
+
+
 }
