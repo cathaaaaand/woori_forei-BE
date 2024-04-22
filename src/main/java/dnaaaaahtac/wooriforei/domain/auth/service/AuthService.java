@@ -110,6 +110,7 @@ public class AuthService {
     }
 
     public GoogleLoginResponseDTO googleLogin(String code) {
+
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("google");
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, code, null, null);
         OAuth2UserRequest userRequest = new OAuth2UserRequest(clientRegistration, accessToken);
@@ -127,21 +128,25 @@ public class AuthService {
 
 
     private User registerNewUser(OAuth2User oAuth2User) {
+
         User newUser = new User();
         newUser.setEmail(oAuth2User.getAttribute("email"));
         newUser.setUsername(oAuth2User.getAttribute("name"));
-        newUser.setPassword(passwordEncoder.encode("defaultPassword")); // You might want to handle passwords differently for social users
-        newUser.setAdmin(false); // Default to false, adjust according to your application needs
+        newUser.setPassword(passwordEncoder.encode("defaultPassword"));
+        newUser.setAdmin(false);
         userRepository.save(newUser);
+
         return newUser;
     }
 
     private SocialLogin registerNewSocialLogin(User user, OAuth2User oAuth2User) {
+
         SocialLogin newSocialLogin = new SocialLogin();
         newSocialLogin.setUser(user);
-        newSocialLogin.setExternalId(oAuth2User.getName()); // Assuming 'name' is used as a unique identifier
+        newSocialLogin.setExternalId(oAuth2User.getName());
         newSocialLogin.setSocialType("google");
         socialLoginRepository.save(newSocialLogin);
+
         return newSocialLogin;
     }
 }
