@@ -35,7 +35,6 @@ public class UserService {
                 .schedulerId(null)
                 .boardId(null)
                 .commentId(null)
-                .image(newUser.getImage())
                 .isAdmin(newUser.getIsAdmin())
                 .phoneNumber(newUser.getPhoneNumber())
                 .build();
@@ -57,7 +56,6 @@ public class UserService {
         newUser.setMbti(profileRequestDTO.getMbti());
         newUser.setBirthday(profileRequestDTO.getBirthday());
         newUser.setNation(profileRequestDTO.getNation());
-        newUser.setImage(profileRequestDTO.getImage());
         newUser.setPhoneNumber(profileRequestDTO.getPhoneNumber());
 
         userRepository.save(newUser);
