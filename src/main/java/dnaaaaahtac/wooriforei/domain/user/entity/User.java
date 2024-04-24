@@ -1,5 +1,6 @@
 package dnaaaaahtac.wooriforei.domain.user.entity;
 
+import dnaaaaahtac.wooriforei.domain.image.entity.Image;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,8 +16,9 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(length = 100)
-    private String image;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "image_id") // 외래키로 사용될 컬럼 이름
+    private Image image;
 
     @Column(length = 50, nullable = false)
     private String username;
@@ -65,7 +67,7 @@ public class User extends BaseTimeEntity {
         this.userId = userId;
     }
 
-    public void setImage(String image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 

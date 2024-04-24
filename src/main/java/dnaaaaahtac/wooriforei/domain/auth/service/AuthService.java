@@ -103,7 +103,6 @@ public class AuthService {
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())
                 .nation(newUser.getNation())
-                .image(newUser.getImage())
                 .isAdmin(newUser.getIsAdmin())
                 .isAgreed(newUser.getIsAgreed())
                 .build();
