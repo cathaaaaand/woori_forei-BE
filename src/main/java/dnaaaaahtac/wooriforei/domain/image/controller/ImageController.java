@@ -50,31 +50,4 @@ public class ImageController {
         return ResponseEntity.ok().body(CommonResponse.of("프로필 사진 삭제 성공", null));
     }
 
-
-/*
-    //게시글 사진 업로드
-    @PostMapping("/image")
-    public ResponseEntity<CommonResponse<List<String>>> saveBoardImage(
-            @ModelAttribute ImageSaveDTO imageSaveDto, Board board) {
-
-        List<String> list = imageService.saveBoardImages(imageSaveDto,board);
-
-        return ResponseEntity.ok().body(CommonResponse.of("게시글 이미지 저장 성공", list));
-    }
-*/
-
-
-/*
-    //게시글 사진 조회
-    @GetMapping("/images")
-    public String getallImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return imageService.getImage("img.png");
-    }
-
-    //게시글 사진 삭제
-    @PostMapping("/images")
-    public String delete(@RequestParam(required = true) String fileName){
-        imageService.deleteImage(fileName);
-        return "success";
-    }*/
 }

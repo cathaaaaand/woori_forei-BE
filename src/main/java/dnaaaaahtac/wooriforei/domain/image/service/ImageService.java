@@ -36,7 +36,7 @@ public class ImageService {
     public List<String> saveProfileImages(ImageSaveDTO saveDto, User user) {
         List<String> resultList = new ArrayList<>();
 
-        if(!(user.getImage() ==null)){
+        if (!(user.getImage() == null)) {
             deleteProfileImage(user);
         }
 
@@ -87,9 +87,9 @@ public class ImageService {
     }
 
     //프로필 조회
-    public String getProfileImage(User user){
+    public String getProfileImage(User user) {
 
-        if(user.getImage()==null){
+        if (user.getImage() == null) {
             throw new CustomException(ErrorCode.NOT_FOUND_IMAGE);
         }
 
@@ -101,7 +101,7 @@ public class ImageService {
     @Transactional
     public void deleteProfileImage(User user) {
 
-        if(user.getImage()==null){
+        if (user.getImage() == null) {
             throw new CustomException(ErrorCode.NOT_FOUND_IMAGE);
         }
 
@@ -117,55 +117,6 @@ public class ImageService {
         userRepository.save(user);
 
     }
-
-/*    // 게시글 이미지 저장
-    @Transactional
-    public List<String> saveBoardImages(ImageSaveDTO saveDto, Board board) {
-        List<String> resultList = new ArrayList<>();
-
-        for (MultipartFile multipartFile : saveDto.getImages()) {
-            String value = saveImageBo(multipartFile, board);
-            resultList.add(value);
-        }
-
-        return resultList;
-    }
-
-    // 개사글 이미지 저장
-    @Transactional
-    public String saveImageBo(MultipartFile multipartFile, Board board) {
-
-        long fileSize = multipartFile.getSize();
-        double fileSizeCheck = fileSize / (1024.0 * 1024.0);
-
-        // 5MB 제한 조건 확인
-        if (fileSizeCheck > 5) {
-            throw new CustomException(ErrorCode.OVER_SIZE_FILE);
-        }
-
-        String originalName = multipartFile.getOriginalFilename();
-        Image image = new Image(originalName);
-
-        String filename = image.getStoredName();
-
-        try {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
-            objectMetadata.setContentLength(multipartFile.getInputStream().available());
-
-            amazonS3Client.putObject(bucketName, filename, multipartFile.getInputStream(), objectMetadata);
-            String accessUrl = amazonS3Client.getUrl(bucketName, filename).toString();
-            image.setAccessUrl(accessUrl);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Image.setBoard(board);
-        imageRepository.save(image);
-
-        return image.getAccessUrl();
-    }*/
 
 }
 
