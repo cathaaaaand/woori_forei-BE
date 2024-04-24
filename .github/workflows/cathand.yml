@@ -44,6 +44,18 @@ jobs:
                   value: ${{ secrets.GMAIL_USERNAME }}
                 - name: JWT_SECRET_KEY
                   value: ${{ secrets.JWT_SECRET_KEY }}
+                - name: GOOGLE_CLIENT_ID
+                  value: ${{ secrets.GOOGLE_CLIENT_ID }}
+                - name: GOOGLE_CLIENT_SECRET
+                  value: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                - name: S3_ACCESS_KEY
+                  value: ${{ secrets.S3_ACCESS_KEY }}
+                - name: S3_NAME
+                  value: ${{ secrets.S3_NAME }}
+                - name: S3_REGION
+                  value: ${{ secrets.S3_REGION }}
+                - name: SECRET_ACCESS_KEY
+                  value: ${{ secrets.SECRET_ACCESS_KEY }}
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
