@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -20,6 +21,9 @@ public class Board extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardImage> boardImage;
+
     @Column
     private String title;
 
@@ -27,14 +31,17 @@ public class Board extends BaseTimeEntity {
     private String content;
 
     @Column
-    private String image;
-
     private LocalDateTime createdAt;
 
+    @Column
     private LocalDateTime modifiedAt;
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setBoardImage(List<BoardImage> boardImage) {
+        this.boardImage = boardImage;
     }
 
     public void setTitle(String title) {
@@ -45,10 +52,6 @@ public class Board extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -56,4 +59,5 @@ public class Board extends BaseTimeEntity {
     public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
+
 }
