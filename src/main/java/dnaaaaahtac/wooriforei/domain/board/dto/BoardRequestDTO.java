@@ -13,7 +13,4 @@ public class BoardRequestDTO {
 
     @NotEmpty
     String content;
-
-    String image;
-
 }
