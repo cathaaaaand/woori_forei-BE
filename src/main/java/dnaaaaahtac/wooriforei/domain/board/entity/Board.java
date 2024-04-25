@@ -30,10 +30,8 @@ public class Board extends BaseTimeEntity {
     @Column
     private String content;
 
-    @Column
     private LocalDateTime createdAt;
 
-    @Column
     private LocalDateTime modifiedAt;
 
     public void setUser(User user) {

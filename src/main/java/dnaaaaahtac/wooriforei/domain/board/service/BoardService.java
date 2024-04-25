@@ -55,6 +55,7 @@ public class BoardService {
         }
 
         boardRepository.save(board);
+
         return new BoardResponseDTO(board);
     }
 
@@ -74,14 +75,6 @@ public class BoardService {
 
     @Transactional
     public BoardImage saveImageBo(MultipartFile multipartFile, Board board) {
-
-        long fileSize = multipartFile.getSize();
-        double fileSizeCheck = fileSize / (1024.0 * 1024.0);
-
-        // 5MB 제한 조건 확인
-        if (fileSizeCheck > 5) {
-            throw new CustomException(ErrorCode.OVER_SIZE_FILE);
-        }
 
         String originalName = multipartFile.getOriginalFilename();
         BoardImage boardImage = new BoardImage(originalName);
@@ -108,6 +101,7 @@ public class BoardService {
     }
 
 
+    //게시글 최신글 조회
     @Transactional(readOnly = true)
     public List<BoardResponseDTO> getAllBoards() {
 
@@ -149,6 +143,7 @@ public class BoardService {
         }
 
         boardRepository.save(board);
+
         return new BoardResponseDTO(board);
     }
 
