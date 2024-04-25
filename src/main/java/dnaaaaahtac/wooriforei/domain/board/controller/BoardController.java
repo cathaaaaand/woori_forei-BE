@@ -2,7 +2,7 @@ package dnaaaaahtac.wooriforei.domain.board.controller;
 
 import dnaaaaahtac.wooriforei.domain.board.dto.BoardRequestDTO;
 import dnaaaaahtac.wooriforei.domain.board.dto.BoardResponseDTO;
-import dnaaaaahtac.wooriforei.domain.board.service.BoradService;
+import dnaaaaahtac.wooriforei.domain.board.service.BoardService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,14 +20,15 @@ import java.util.List;
 @RequestMapping("/api/communities")
 public class BoardController {
 
-    private final BoradService boradService;
+    private final BoardService boardService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<BoardResponseDTO>> createBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid BoardRequestDTO boardRequestDTO) {
+            @RequestPart(required = false, name = "images") List<MultipartFile> images,
+            @RequestPart(name = "request") @Valid BoardRequestDTO boardRequestDTO) {
 
-        BoardResponseDTO boardResponseDTO = boradService.createBoard(userDetails.getUser(), boardRequestDTO);
+        BoardResponseDTO boardResponseDTO = boardService.createBoard(userDetails.getUser(), boardRequestDTO, images);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.of("게시글 생성 성공", boardResponseDTO));
     }
@@ -34,7 +36,7 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<CommonResponse<List<BoardResponseDTO>>> checkAllBoards() {
 
-        List<BoardResponseDTO> boardResponseDTO = boradService.getAllBoards();
+        List<BoardResponseDTO> boardResponseDTO = boardService.getAllBoards();
 
         return ResponseEntity.ok().body(CommonResponse.of("최신글 전체 조회 성공.", boardResponseDTO));
     }
@@ -42,7 +44,7 @@ public class BoardController {
     @GetMapping("/{communityId}")
     public ResponseEntity<CommonResponse<BoardResponseDTO>> checkByIdBoard(@PathVariable Long communityId) {
 
-        BoardResponseDTO boardResponseDTO = boradService.getBoardById(communityId);
+        BoardResponseDTO boardResponseDTO = boardService.getBoardById(communityId);
 
         return ResponseEntity.ok().body(CommonResponse.of("게시글 단일 조회 성공", boardResponseDTO));
     }
@@ -51,9 +53,10 @@ public class BoardController {
     public ResponseEntity<CommonResponse<BoardResponseDTO>> updateBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long communityId,
-            @RequestBody @Valid BoardRequestDTO boardRequestDTO) {
+            @RequestPart(required = false, name = "images") List<MultipartFile> images,
+            @RequestPart(name = "request") @Valid BoardRequestDTO boardRequestDTO) {
 
-        BoardResponseDTO boardResponseDTO = boradService.updateBoard(userDetails.getUser(), communityId, boardRequestDTO);
+        BoardResponseDTO boardResponseDTO = boardService.updateBoard(userDetails.getUser(), communityId, boardRequestDTO, images);
 
         return ResponseEntity.ok().body(CommonResponse.of("게시글 수정 성공", boardResponseDTO));
     }
@@ -63,7 +66,7 @@ public class BoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long communityId) {
 
-        boradService.deleteBoard(userDetails.getUser(), communityId);
+        boardService.deleteBoard(userDetails.getUser(), communityId);
 
         return ResponseEntity.ok().body(CommonResponse.of("게시글 삭제 성공", null));
     }
