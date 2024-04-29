@@ -18,8 +18,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -71,13 +69,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080", "https://www.wooriforei.info", "http://localhost:3000"));
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
-                    return corsConfiguration;
-                }));
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 여기서 람다 표현식 제거하고 빈을 참조하도록 변경
+        // .cors(cors -> cors.configurationSource(request -> { ... })) 부분을 삭제
+        ;
         return http.build();
     }
 }
