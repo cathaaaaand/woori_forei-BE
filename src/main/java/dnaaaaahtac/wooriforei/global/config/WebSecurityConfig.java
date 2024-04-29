@@ -18,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -42,7 +44,7 @@ public class WebSecurityConfig {
         configuration.setAllowCredentials(true);
 
         // TODO: 실제 배포 환경에서는 구체적인 도메인으로 제한해야 함
-        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://www.wooriforei.info"));
 
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
