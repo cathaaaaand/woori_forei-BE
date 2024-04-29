@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/test-cors").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/faqs/**").permitAll()
                         .requestMatchers("/api/openAPI/**").permitAll()
