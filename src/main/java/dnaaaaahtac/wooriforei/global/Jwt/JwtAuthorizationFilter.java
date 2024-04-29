@@ -1,7 +1,6 @@
 package dnaaaaahtac.wooriforei.global.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -33,6 +32,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+        if (request.getRequestURI().equals("/test-cors")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String token = jwtUtil.resolveToken(request);
             if (token != null && jwtUtil.validationToken(token)) {
@@ -45,7 +50,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         } catch (Exception exception) {
             log.error("Security issue: {}", exception.getMessage());
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            response.getWriter().write(objectMapper.writeValueAsString(ErrorCode.INVALID_JWT_TOKEN));
+            return; // 필터 체인을 더 이상 진행하지 않고 종료
         }
 
         filterChain.doFilter(request, response);
