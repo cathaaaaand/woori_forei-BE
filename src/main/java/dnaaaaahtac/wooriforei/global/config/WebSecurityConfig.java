@@ -45,12 +45,14 @@ public class WebSecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://www.wooriforei.info"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
+        configuration.addExposedHeader("Authorization"); // Authorization 헤더 노출
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
