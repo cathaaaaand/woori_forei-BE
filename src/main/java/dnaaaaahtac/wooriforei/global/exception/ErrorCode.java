@@ -35,6 +35,7 @@ public enum ErrorCode {
     // Comment
 
     COMMENT_TOO_LONG(400, "댓글은 500자를 초과할 수 없습니다."),
+    NOT_FOUND_COMMENT(404, "해당 댓글을 찾을 수 없습니다."),
 
     //Image
     NOT_FOUND_IMAGE(404, "해당 이미지를 찾을 수 없습니다."),
