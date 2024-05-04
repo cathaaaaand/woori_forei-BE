@@ -9,6 +9,9 @@ import dnaaaaahtac.wooriforei.domain.board.entity.Board;
 import dnaaaaahtac.wooriforei.domain.board.entity.BoardImage;
 import dnaaaaahtac.wooriforei.domain.board.repository.BoardImageRepository;
 import dnaaaaahtac.wooriforei.domain.board.repository.BoardRepository;
+import dnaaaaahtac.wooriforei.domain.comment.dto.CommentResponseDTO;
+import dnaaaaahtac.wooriforei.domain.comment.entity.Comment;
+import dnaaaaahtac.wooriforei.domain.comment.repository.CommentRepository;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
@@ -34,6 +37,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardImageRepository boardImageRepository;
     private final AmazonS3Client amazonS3Client;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public BoardResponseDTO createBoard(User user, BoardRequestDTO boardRequestDTO, List<MultipartFile> multipartFile) {
@@ -50,13 +54,11 @@ public class BoardService {
         if (multipartFile != null && !multipartFile.isEmpty()) {
             List<BoardImage> boardImageList = saveBoardImages(multipartFile, board);
             board.setBoardImage(boardImageList);
-        } else {
-            board.setBoardImage(null);
         }
 
         boardRepository.save(board);
 
-        return new BoardResponseDTO(board);
+        return new BoardResponseDTO(board, null);
     }
 
     // 게시글 이미지 저장
@@ -116,11 +118,17 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
 
-        return new BoardResponseDTO(board);
+        List<Comment> comments = commentRepository.findByBoard_BoardId(boardId);
+        List<CommentResponseDTO> commentDTOS = comments.stream()
+                .map(CommentResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return new BoardResponseDTO(board, commentDTOS);
     }
 
     @Transactional
-    public BoardResponseDTO updateBoard(User user, Long boardId, BoardRequestDTO boardRequestDTO, List<MultipartFile> multipartFile) {
+    public BoardResponseDTO updateBoard(User user, Long boardId, BoardRequestDTO boardRequestDTO,
+                                        List<MultipartFile> multipartFile) {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
@@ -140,11 +148,17 @@ public class BoardService {
             List<BoardImage> newImages = saveBoardImages(multipartFile, board);
             existingImages.addAll(newImages);
             board.setBoardImage(existingImages);
+        } else {
         }
 
         boardRepository.save(board);
 
-        return new BoardResponseDTO(board);
+        List<Comment> comments = commentRepository.findByBoard_BoardId(boardId);
+        List<CommentResponseDTO> commentDTOS = comments.stream()
+                .map(CommentResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return new BoardResponseDTO(board, commentDTOS);
     }
 
     @Transactional
@@ -173,13 +187,6 @@ public class BoardService {
 
     @Transactional
     public List<BoardResponseDTO> checkMyBoards(Long userId) {
-
-        List<Board> boards = boardRepository.findByUserId(userId);
-
-        if (boards.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
-        }
-
 
         return boardRepository.findByUserId(userId).stream()
                 .map(BoardResponseDTO::new)

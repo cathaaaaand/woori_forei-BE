@@ -2,7 +2,7 @@ package dnaaaaahtac.wooriforei.domain.board.dto;
 
 import dnaaaaahtac.wooriforei.domain.board.entity.Board;
 import dnaaaaahtac.wooriforei.domain.board.entity.BoardImage;
-import dnaaaaahtac.wooriforei.domain.user.entity.User;
+import dnaaaaahtac.wooriforei.domain.comment.dto.CommentResponseDTO;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -27,6 +27,22 @@ public class BoardResponseDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
+
+    private List<CommentResponseDTO> comments;
+
+    public BoardResponseDTO(Board board, List<CommentResponseDTO> comments) {
+        this.boardId = board.getBoardId();
+        this.title = board.getTitle();
+        this.content = board.getContent();
+        this.accessUrls = board.getBoardImage().stream()
+                .map(BoardImage::getAccessUrl)
+                .collect(Collectors.toList());
+        this.userId = board.getUser().getUserId();
+        this.nickname = board.getUser().getNickname();
+        this.createdAt = board.getCreatedAt();
+        this.modifiedAt = board.getModifiedAt();
+        this.comments = comments;
+    }
 
     public BoardResponseDTO(Board board) {
         this.boardId = board.getBoardId();
