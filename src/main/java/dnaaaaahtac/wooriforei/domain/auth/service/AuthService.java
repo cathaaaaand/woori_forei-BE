@@ -102,7 +102,6 @@ public class AuthService {
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
-                .phoneNumber(newUser.getPhoneNumber())
                 .introduction(newUser.getIntroduction())
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())

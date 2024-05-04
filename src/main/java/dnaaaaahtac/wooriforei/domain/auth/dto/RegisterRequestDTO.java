@@ -40,8 +40,6 @@ public class RegisterRequestDTO {
     @NotNull
     private Boolean isAdmin = false;
 
-    private String phoneNumber;
-
     private String secretCode;
 
     public void setIsAgreed(Boolean agreed) {
@@ -90,10 +88,6 @@ public class RegisterRequestDTO {
 
     public void setAdmin(Boolean admin) {
         isAdmin = admin;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public void setSecretCode(String secretCode) {

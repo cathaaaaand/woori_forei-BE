@@ -25,8 +25,6 @@ public class LoginResponseDTO {
 
     private String nation;
 
-    private String phoneNumber;
-
     private Boolean isAdmin;
 
     private Boolean isAgreed;
