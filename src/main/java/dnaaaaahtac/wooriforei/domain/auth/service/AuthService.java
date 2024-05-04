@@ -64,6 +64,10 @@ public class AuthService {
             }
         }
 
+        if (registerRequestDTO.getIsAdmin() && registerRequestDTO.getSecretCode() == null) {
+            throw new CustomException(ErrorCode.NOT_FOUND_SECRET_CODE);
+        }
+
         EmailVerification verification = emailVerificationRepository.findByEmailAndVerified(registerRequestDTO.getEmail(), true)
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_VERIFIED));
 
@@ -98,7 +102,6 @@ public class AuthService {
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
-                .phoneNumber(newUser.getPhoneNumber())
                 .introduction(newUser.getIntroduction())
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())

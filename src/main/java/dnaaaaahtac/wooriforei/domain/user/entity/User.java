@@ -52,9 +52,6 @@ public class User extends BaseTimeEntity {
 
     private String birthday;
 
-    @Column(length = 20)
-    private String phoneNumber;
-
     @Column(length = 100)
     private String nation;
 
@@ -117,10 +114,6 @@ public class User extends BaseTimeEntity {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public boolean isAdmin() {
