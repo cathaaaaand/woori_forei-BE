@@ -64,6 +64,10 @@ public class AuthService {
             }
         }
 
+        if (registerRequestDTO.getIsAdmin() && registerRequestDTO.getSecretCode() == null) {
+            throw new CustomException(ErrorCode.NOT_FOUND_SECRET_CODE);
+        }
+
         EmailVerification verification = emailVerificationRepository.findByEmailAndVerified(registerRequestDTO.getEmail(), true)
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_VERIFIED));
 
