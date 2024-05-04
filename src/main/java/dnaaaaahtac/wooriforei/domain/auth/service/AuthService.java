@@ -14,7 +14,12 @@ import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -23,9 +28,14 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -37,6 +47,15 @@ public class AuthService {
 
     @Value("${admin_secret_code}")
     private String adminSecretCode;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String clientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String redirectUri;
 
     public void register(RegisterRequestDTO registerRequestDTO) {
 
@@ -112,43 +131,65 @@ public class AuthService {
     }
 
     public GoogleLoginResponseDTO googleLogin(String code) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("google");
-        OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, code, null, null);
-        OAuth2UserRequest userRequest = new OAuth2UserRequest(clientRegistration, accessToken);
-        DefaultOAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("code", code);
+            params.add("client_id", clientId);
+            params.add("client_secret", clientSecret);
+            params.add("redirect_uri", redirectUri);
+            params.add("grant_type", "authorization_code");
 
-        String email = oAuth2User.getAttribute("email");
-        User user = userRepository.findByEmail(email).orElseGet(() -> registerNewUser(oAuth2User));
-        SocialLogin socialLogin = socialLoginRepository.findByExternalId(oAuth2User.getName()).orElseGet(() -> registerNewSocialLogin(user, oAuth2User));
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-        String token = jwtUtil.createToken(String.valueOf(user.getId()));
+            ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("google");
+            if (clientRegistration == null) {
+                throw new CustomException(ErrorCode.NOT_FOUND_CLIENT_REGISTRATION);
+            }
 
-        return new GoogleLoginResponseDTO(user.getId(), user.getUsername(), token);
+            String tokenUrl = "https://oauth2.googleapis.com/token";
+            ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, requestEntity, String.class);
+
+            // JSON 파싱을 통해 액세스 토큰을 가져옴
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            String accessTokenValue = jsonObject.getString("access_token").trim();
+
+            OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, accessTokenValue, null, null);
+            OAuth2UserRequest userRequest = new OAuth2UserRequest(clientRegistration, accessToken);
+            DefaultOAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
+            OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+
+            User user = userRepository.findByEmail(oAuth2User.getAttribute("email"))
+                    .orElseGet(() -> registerNewUser(oAuth2User));
+            registerNewSocialLogin(user, oAuth2User); // Ensure social login info is also saved
+            String jwtToken = jwtUtil.createToken(String.valueOf(user.getId()));
+
+            return new GoogleLoginResponseDTO(user.getId(), user.getUsername(), jwtToken);
+        } catch (Exception e) {
+            System.out.println("Error during Google login: " + e);
+            throw new RuntimeException("Login failed", e);
+        }
     }
 
-
     private User registerNewUser(OAuth2User oAuth2User) {
-
         User newUser = new User();
         newUser.setEmail(oAuth2User.getAttribute("email"));
         newUser.setUsername(oAuth2User.getAttribute("name"));
+        newUser.setNickname(oAuth2User.getAttribute("nickname"));
         newUser.setPassword(passwordEncoder.encode("defaultPassword"));
         newUser.setAdmin(false);
         userRepository.save(newUser);
-
         return newUser;
     }
 
-    private SocialLogin registerNewSocialLogin(User user, OAuth2User oAuth2User) {
-
+    private void registerNewSocialLogin(User user, OAuth2User oAuth2User) {
         SocialLogin newSocialLogin = new SocialLogin();
         newSocialLogin.setUser(user);
         newSocialLogin.setExternalId(oAuth2User.getName());
         newSocialLogin.setSocialType("google");
         socialLoginRepository.save(newSocialLogin);
-
-        return newSocialLogin;
     }
 }
