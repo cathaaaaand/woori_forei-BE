@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,29 +51,10 @@ public class CommentService {
     }
 
     @Transactional
-    public List<CommentResponseDTO> checkAllComments(Long boardId) {
-
-        boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
-
-        List<Comment> comment = commentRepository.findByBoard_BoardId(boardId);
-
-        List<CommentResponseDTO> commentResponseDTOS = new ArrayList<>();
-
-        for (Comment response : comment) {
-
-            commentResponseDTOS.add(new CommentResponseDTO(response));
-        }
-
-        return commentResponseDTOS;
-    }
-
-
-    @Transactional
     public CommentResponseDTO updateComment(Long commentId, User user, CommentRequestDTO commentRequestDTO) {
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMMENT));
 
         if (!user.getId().equals(comment.getUser().getId())) {
             throw new CustomException(ErrorCode.FORBIDDEN_WORK);
@@ -99,13 +80,21 @@ public class CommentService {
     public void deleteComment(Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMMENT));
 
         if (!user.getId().equals(comment.getUser().getId())) {
             throw new CustomException(ErrorCode.FORBIDDEN_WORK);
         }
 
         commentRepository.delete(comment);
+    }
+
+    @Transactional
+    public List<CommentResponseDTO> checkMyComments(Long userId) {
+
+        return commentRepository.findByUser_UserId(userId).stream()
+                .map(CommentResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
 }

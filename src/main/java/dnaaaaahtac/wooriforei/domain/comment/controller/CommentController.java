@@ -32,14 +32,6 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.of("댓글 생성 성공", commentResponseDTO));
     }
 
-    @GetMapping("/{boardId}")
-    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> checkAllComments(@PathVariable Long boardId) {
-
-        List<CommentResponseDTO> commentResponseDTOS = commentService.checkAllComments(boardId);
-
-        return ResponseEntity.ok().body(CommonResponse.of("댓글 전체 조회 성공", commentResponseDTOS));
-    }
-
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommonResponse<CommentResponseDTO>> updateComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -59,6 +51,14 @@ public class CommentController {
         commentService.deleteComment(commentId, userDetails.getUser());
 
         return ResponseEntity.ok().body(CommonResponse.of("댓글 삭제 성공", null));
+    }
+
+    @GetMapping("/mycomment")
+    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> checkMyComments(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<CommentResponseDTO> commentResponseDTO = commentService.checkMyComments(userDetails.getUserId());
+
+        return ResponseEntity.ok().body(CommonResponse.of("내가 작성한 댓글 조회 성공", commentResponseDTO));
     }
 
 }
