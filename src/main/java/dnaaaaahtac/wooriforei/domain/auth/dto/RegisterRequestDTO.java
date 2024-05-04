@@ -34,8 +34,6 @@ public class RegisterRequestDTO {
 
     private String nation;
 
-    private String image;
-
     @NotNull
     private Boolean isAgreed;
 
@@ -84,10 +82,6 @@ public class RegisterRequestDTO {
 
     public void setNation(String nation) {
         this.nation = nation;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public void setAgreed(Boolean agreed) {
