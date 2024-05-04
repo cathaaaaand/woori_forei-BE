@@ -1,6 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.board.entity;
 
 
+import dnaaaaahtac.wooriforei.domain.comment.entity.Comment;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -23,6 +24,9 @@ public class Board extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImage;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comment;
 
     @Column
     private String title;

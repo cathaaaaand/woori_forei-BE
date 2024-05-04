@@ -35,9 +35,8 @@ public class BoardResponseDTO {
         this.accessUrls = board.getBoardImage().stream()
                 .map(BoardImage::getAccessUrl)
                 .collect(Collectors.toList());
-        User user = board.getUser();
-        this.userId = user.getUserId();
-        this.nickname = user.getNickname();
+        this.userId = board.getUser().getUserId();
+        this.nickname = board.getUser().getNickname();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }
