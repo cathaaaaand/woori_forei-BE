@@ -75,7 +75,7 @@ public class AuthService {
             throw new CustomException(ErrorCode.AGREEMENT_NOT_ACCEPTED);
         }
 
-        if (registerRequestDTO.getSecretCode() != null) {
+        if (!registerRequestDTO.getSecretCode().isEmpty()) {
             if (adminSecretCode.equals(registerRequestDTO.getSecretCode())) {
                 registerRequestDTO.setAdmin(true);
             } else {
