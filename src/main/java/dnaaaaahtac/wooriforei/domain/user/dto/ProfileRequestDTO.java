@@ -22,6 +22,4 @@ public class ProfileRequestDTO {
     String nation;
 
     String image;
-
-    String phoneNumber;
 }
