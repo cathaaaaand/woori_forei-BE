@@ -171,6 +171,21 @@ public class BoardService {
 
     }*/
 
+    @Transactional
+    public List<BoardResponseDTO> checkMyBoards(Long userId) {
+
+        List<Board> boards = boardRepository.findByUserId(userId);
+
+        if (boards.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
+        }
+
+
+        return boardRepository.findByUserId(userId).stream()
+                .map(BoardResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
     private void validation(BoardRequestDTO boardRequestDTO) {
         if (boardRequestDTO.getTitle().isEmpty()) {
             throw new CustomException(ErrorCode.TITLE_REQUIRED);
