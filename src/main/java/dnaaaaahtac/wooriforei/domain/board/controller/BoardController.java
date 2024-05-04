@@ -71,5 +71,14 @@ public class BoardController {
         return ResponseEntity.ok().body(CommonResponse.of("게시글 삭제 성공", null));
     }
 
+    @GetMapping("/myboard")
+    public ResponseEntity<CommonResponse<List<BoardResponseDTO>>> checkMyBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        List<BoardResponseDTO> myBoardList = boardService.checkMyBoards(userDetails.getUserId());
+
+        return ResponseEntity.ok().body(CommonResponse.of("내가 작성한 게시글 조회 성공",myBoardList));
+    }
+
 }
 

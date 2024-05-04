@@ -34,15 +34,11 @@ public class RegisterRequestDTO {
 
     private String nation;
 
-    private String image;
-
     @NotNull
     private Boolean isAgreed;
 
     @NotNull
     private Boolean isAdmin = false;
-
-    private String phoneNumber;
 
     private String secretCode;
 
@@ -86,20 +82,12 @@ public class RegisterRequestDTO {
         this.nation = nation;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public void setAgreed(Boolean agreed) {
         isAgreed = agreed;
     }
 
     public void setAdmin(Boolean admin) {
         isAdmin = admin;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public void setSecretCode(String secretCode) {

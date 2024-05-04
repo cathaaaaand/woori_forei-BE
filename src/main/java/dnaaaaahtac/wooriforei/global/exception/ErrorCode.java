@@ -8,6 +8,7 @@ public enum ErrorCode {
     // Admin
     INVALID_SECRET_CODE(400, "비밀 암호가 올바르지 않습니다."),
     NOT_FOUND_ADMIN(404, "해당 관리자가 존재하지 않습니다."),
+    NOT_FOUND_SECRET_CODE(404, "관리자 회원가입시 비밀 암호를 입력해주세요."),
 
     // Auth
     PASSWORD_NOT_MATCH(400, "비밀번호가 일치하지 않습니다."),
