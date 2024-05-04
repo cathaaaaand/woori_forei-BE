@@ -32,6 +32,9 @@ public enum ErrorCode {
     CONTENT_REQUIRED(400, "내용을 입력해주세요."),
     FORBIDDEN_WORK(403, "이 작업을 수행할 권한이 없습니다."),
 
+    // Comment
+
+    COMMENT_TOO_LONG(400, "댓글은 500자를 초과할 수 없습니다."),
 
     //Image
     NOT_FOUND_IMAGE(404, "해당 이미지를 찾을 수 없습니다."),
