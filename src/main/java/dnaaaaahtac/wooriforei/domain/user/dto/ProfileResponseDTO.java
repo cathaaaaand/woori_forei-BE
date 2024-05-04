@@ -32,6 +32,4 @@ public class ProfileResponseDTO {
     private String image;       // 이미지 URL (미구현)
 
     private Boolean isAdmin;
-
-    private String phoneNumber;
 }
