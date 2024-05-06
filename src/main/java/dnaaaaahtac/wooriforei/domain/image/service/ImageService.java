@@ -3,7 +3,6 @@ package dnaaaaahtac.wooriforei.domain.image.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import dnaaaaahtac.wooriforei.domain.image.dto.ImageSaveDTO;
 import dnaaaaahtac.wooriforei.domain.image.entity.Image;
 import dnaaaaahtac.wooriforei.domain.image.repository.ImageRepository;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
@@ -33,14 +32,15 @@ public class ImageService {
 
     // 프로필 저장
     @Transactional
-    public List<String> saveProfileImages(ImageSaveDTO saveDto, User user) {
+    public List<String> saveProfileImages(List<MultipartFile> multipartFiles, User user) {
+
         List<String> resultList = new ArrayList<>();
 
         if (!(user.getImage() == null)) {
             deleteProfileImage(user);
         }
 
-        for (MultipartFile multipartFile : saveDto.getImages()) {
+        for (MultipartFile multipartFile : multipartFiles) {
             String value = saveImagePr(multipartFile, user);
             resultList.add(value);
         }
