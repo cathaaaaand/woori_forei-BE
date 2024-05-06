@@ -13,7 +13,7 @@ public class ProfileRequestDTO {
 
     String email;
 
-    String description;
+    String information;
 
     String mbti;
 
