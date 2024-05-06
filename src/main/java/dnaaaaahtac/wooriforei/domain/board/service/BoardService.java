@@ -148,7 +148,6 @@ public class BoardService {
             List<BoardImage> newImages = saveBoardImages(multipartFile, board);
             existingImages.addAll(newImages);
             board.setBoardImage(existingImages);
-        } else {
         }
 
         boardRepository.save(board);
