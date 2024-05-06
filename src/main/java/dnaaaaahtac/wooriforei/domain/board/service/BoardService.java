@@ -2,6 +2,7 @@ package dnaaaaahtac.wooriforei.domain.board.service;
 
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import dnaaaaahtac.wooriforei.domain.board.dto.BoardRequestDTO;
 import dnaaaaahtac.wooriforei.domain.board.dto.BoardResponseDTO;
@@ -168,6 +169,12 @@ public class BoardService {
 
         if (!board.getUser().getUserId().equals(user.getUserId()) && !board.getUser().getIsAdmin()) {
             throw new CustomException(ErrorCode.FORBIDDEN_WORK);
+        }
+
+        for(BoardImage boardImage : board.getBoardImage()){
+
+            DeleteObjectRequest request = new DeleteObjectRequest(bucketName, boardImage.getStoredName());
+            amazonS3Client.deleteObject(request); // S3에서 이미지 삭제
         }
 
         boardRepository.delete(board);
