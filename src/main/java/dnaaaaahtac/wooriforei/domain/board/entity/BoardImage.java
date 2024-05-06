@@ -38,8 +38,10 @@ public class BoardImage {
     // 이미지 파일의 확장자를 추출하는 메소드
     public String extractExtension(String originName) {
         int index = originName.lastIndexOf('.');
-
-        return originName.substring(index, originName.length());
+        if (index == -1) {
+            return ""; // 확장자가 없으면 빈 문자열 반환
+        }
+        return originName.substring(index + 1);
     }
 
     // 이미지 파일의 이름을 저장하기 위한 이름으로 변환하는 메소드

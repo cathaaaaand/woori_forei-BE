@@ -1,12 +1,14 @@
 package dnaaaaahtac.wooriforei.domain.board.entity;
 
 
+import dnaaaaahtac.wooriforei.domain.comment.entity.Comment;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.global.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,7 +24,10 @@ public class Board extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardImage> boardImage;
+    private List<BoardImage> boardImage = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comment;
 
     @Column
     private String title;
