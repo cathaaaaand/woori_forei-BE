@@ -35,6 +35,8 @@ public class Board extends BaseTimeEntity {
     @Column
     private String content;
 
+    private int boardLike;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
@@ -53,6 +55,10 @@ public class Board extends BaseTimeEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setBoardLike(int boardLike) {
+        this.boardLike = boardLike;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
