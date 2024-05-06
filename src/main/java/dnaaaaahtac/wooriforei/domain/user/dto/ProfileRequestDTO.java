@@ -20,6 +20,4 @@ public class ProfileRequestDTO {
     String birthday;
 
     String nation;
-
-    String image;
 }
