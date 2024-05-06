@@ -33,14 +33,15 @@ public class ImageService {
 
     // 프로필 저장
     @Transactional
-    public List<String> saveProfileImages(ImageSaveDTO saveDto, User user) {
+    public List<String> saveProfileImages(List<MultipartFile> multipartFiles, User user) {
+
         List<String> resultList = new ArrayList<>();
 
         if (!(user.getImage() == null)) {
             deleteProfileImage(user);
         }
 
-        for (MultipartFile multipartFile : saveDto.getImages()) {
+        for (MultipartFile multipartFile : multipartFiles) {
             String value = saveImagePr(multipartFile, user);
             resultList.add(value);
         }
