@@ -3,7 +3,6 @@ package dnaaaaahtac.wooriforei.domain.image.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import dnaaaaahtac.wooriforei.domain.image.dto.ImageSaveDTO;
 import dnaaaaahtac.wooriforei.domain.image.entity.Image;
 import dnaaaaahtac.wooriforei.domain.image.repository.ImageRepository;
 import dnaaaaahtac.wooriforei.domain.user.entity.User;
