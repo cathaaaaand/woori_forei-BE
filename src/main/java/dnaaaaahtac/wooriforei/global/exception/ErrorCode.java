@@ -23,6 +23,7 @@ public enum ErrorCode {
     EXPIRED_VERIFICATION_CODE(410, "인증 코드가 만료되었습니다."),
     EMAIL_SEND_LIMIT_EXCEEDED(429, "인증 이메일 전송 횟수가 초과되었습니다."),
     EMAIL_NOT_VERIFIED(400, "이메일이 인증되지 않았습니다."),
+    NOT_FOUND_CLIENT_REGISTRATION(404, "클라이언트 등록 정보를 찾을 수 없습니다."),
 
     // Board
     NOT_FOUND_BOARD(404, "해당 게시글을 찾을 수 없습니다."),
