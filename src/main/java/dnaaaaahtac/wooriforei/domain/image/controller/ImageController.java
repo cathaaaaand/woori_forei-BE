@@ -1,6 +1,5 @@
 package dnaaaaahtac.wooriforei.domain.image.controller;
 
-import dnaaaaahtac.wooriforei.domain.image.dto.ImageSaveDTO;
 import dnaaaaahtac.wooriforei.domain.image.service.ImageService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
@@ -8,30 +7,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/images/profile")
 public class ImageController {
 
     private final ImageService imageService;
 
 
     //프로필 업로드
-    @PostMapping("/images/profile")
+    @PostMapping
     public ResponseEntity<CommonResponse<List<String>>> saveProfileImage(
-            @ModelAttribute ImageSaveDTO imageSaveDto,
+            @RequestPart(required = false, name = "images") List<MultipartFile> images,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        List<String> list = imageService.saveProfileImages(imageSaveDto, userDetails.getUser());
+        List<String> list = imageService.saveProfileImages(images, userDetails.getUser());
 
         return ResponseEntity.ok().body(CommonResponse.of("프로필 이미지 저장 성공", list));
     }
 
     //프로필 사진 조회
-    @GetMapping("/images/profile")
+    @GetMapping
     public ResponseEntity<CommonResponse<String>> getProfileImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -41,7 +41,7 @@ public class ImageController {
     }
 
     //프로필 사진 삭제
-    @DeleteMapping("/images/profile")
+    @DeleteMapping
     public ResponseEntity<CommonResponse<String>> deleteProfileImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 

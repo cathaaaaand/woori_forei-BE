@@ -73,11 +73,11 @@ public class BoardController {
 
     @GetMapping("/myboard")
     public ResponseEntity<CommonResponse<List<BoardResponseDTO>>> checkMyBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         List<BoardResponseDTO> myBoardList = boardService.checkMyBoards(userDetails.getUserId());
 
-        return ResponseEntity.ok().body(CommonResponse.of("내가 작성한 게시글 조회 성공",myBoardList));
+        return ResponseEntity.ok().body(CommonResponse.of("내가 작성한 게시글 조회 성공", myBoardList));
     }
 
 }

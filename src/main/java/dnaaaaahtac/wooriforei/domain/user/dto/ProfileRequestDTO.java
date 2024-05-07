@@ -13,13 +13,11 @@ public class ProfileRequestDTO {
 
     String email;
 
-    String description;
+    String information;
 
     String mbti;
 
     String birthday;
 
     String nation;
-
-    String image;
 }

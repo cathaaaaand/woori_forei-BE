@@ -57,7 +57,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**", "/api/images/**", "/api/communities/**")) // 특정 경로에서만 CSRF 비활성화
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**", "/api/images/**", "/api/communities/**", "/api/comments/**", "/api/users/{userId}")) // 특정 경로에서만 CSRF 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 정책을 Stateless로 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
