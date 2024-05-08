@@ -98,6 +98,7 @@ public class AuthService {
         newUser.setMbti(registerRequestDTO.getMbti());
         newUser.setBirthday(registerRequestDTO.getBirthday());
         newUser.setNation(registerRequestDTO.getNation());
+        newUser.setIntroduction(registerRequestDTO.getIntroduction());
         newUser.setAgreed(registerRequestDTO.getIsAgreed());
         newUser.setAdmin(registerRequestDTO.getIsAdmin());
 
