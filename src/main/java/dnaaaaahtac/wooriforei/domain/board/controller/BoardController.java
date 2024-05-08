@@ -80,5 +80,21 @@ public class BoardController {
         return ResponseEntity.ok().body(CommonResponse.of("내가 작성한 게시글 조회 성공", myBoardList));
     }
 
+    @PostMapping("/{boardId}/like")
+    public ResponseEntity<CommonResponse<Void>> boardLike(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId) {
+
+        boardService.boardLike(userDetails.getUser(), boardId);
+
+        return ResponseEntity.ok().body(CommonResponse.of("게시글 좋아요/삭제 성공", null));
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<CommonResponse<List<BoardResponseDTO>>> likeBoardList() {
+
+        return ResponseEntity.ok().body(CommonResponse.of("인기글 조회 성공", boardService.likeBoardList()));
+    }
+
 }
 
