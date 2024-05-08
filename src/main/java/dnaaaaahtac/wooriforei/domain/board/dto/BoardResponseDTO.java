@@ -24,6 +24,8 @@ public class BoardResponseDTO {
 
     private String nickname;
 
+    private int boardLike;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
@@ -39,6 +41,7 @@ public class BoardResponseDTO {
                 .collect(Collectors.toList());
         this.userId = board.getUser().getUserId();
         this.nickname = board.getUser().getNickname();
+        this.boardLike = board.getBoardLike();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
         this.comments = comments;
@@ -53,6 +56,7 @@ public class BoardResponseDTO {
                 .collect(Collectors.toList());
         this.userId = board.getUser().getUserId();
         this.nickname = board.getUser().getNickname();
+        this.boardLike = board.getBoardLike();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }

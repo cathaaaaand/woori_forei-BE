@@ -8,7 +8,9 @@ import dnaaaaahtac.wooriforei.domain.board.dto.BoardRequestDTO;
 import dnaaaaahtac.wooriforei.domain.board.dto.BoardResponseDTO;
 import dnaaaaahtac.wooriforei.domain.board.entity.Board;
 import dnaaaaahtac.wooriforei.domain.board.entity.BoardImage;
+import dnaaaaahtac.wooriforei.domain.board.entity.BoardLike;
 import dnaaaaahtac.wooriforei.domain.board.repository.BoardImageRepository;
+import dnaaaaahtac.wooriforei.domain.board.repository.BoardLikeRepository;
 import dnaaaaahtac.wooriforei.domain.board.repository.BoardRepository;
 import dnaaaaahtac.wooriforei.domain.comment.dto.CommentResponseDTO;
 import dnaaaaahtac.wooriforei.domain.comment.entity.Comment;
@@ -39,6 +41,7 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final AmazonS3Client amazonS3Client;
     private final CommentRepository commentRepository;
+    private final BoardLikeRepository boardLikeRepository;
 
     @Transactional
     public BoardResponseDTO createBoard(User user, BoardRequestDTO boardRequestDTO, List<MultipartFile> multipartFile) {
@@ -49,6 +52,7 @@ public class BoardService {
         board.setUser(user);
         board.setTitle(boardRequestDTO.getTitle());
         board.setContent(boardRequestDTO.getContent());
+        board.setBoardLike(0);
         board.setCreatedAt(LocalDateTime.now());
         board.setModifiedAt(LocalDateTime.now());
 
@@ -171,7 +175,7 @@ public class BoardService {
             throw new CustomException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        for(BoardImage boardImage : board.getBoardImage()){
+        for (BoardImage boardImage : board.getBoardImage()) {
 
             DeleteObjectRequest request = new DeleteObjectRequest(bucketName, boardImage.getStoredName());
             amazonS3Client.deleteObject(request); // S3에서 이미지 삭제
@@ -195,6 +199,30 @@ public class BoardService {
     public List<BoardResponseDTO> checkMyBoards(Long userId) {
 
         return boardRepository.findByUserId(userId).stream()
+                .map(BoardResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void boardLike(User user, Long boardId) {
+
+        Board board = boardRepository.findById(boardId).
+                orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
+
+        if (boardLikeRepository.existsByUserIdAndBoard_BoardId(user.getUserId(), boardId)) {
+            BoardLike boardLike = boardLikeRepository.findByUserIdAndBoard_BoardId(user.getUserId(), boardId);
+            boardLikeRepository.delete(boardLike);
+            board.setBoardLike(boardLikeRepository.countByBoard_BoardId(boardId));
+        } else {
+            BoardLike newLike = new BoardLike(user, board);
+            boardLikeRepository.save(newLike);
+            board.setBoardLike(boardLikeRepository.countByBoard_BoardId(boardId));
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDTO> likeBoardList() {
+        return boardRepository.findTopLikedBoards().stream()
                 .map(BoardResponseDTO::new)
                 .collect(Collectors.toList());
     }
