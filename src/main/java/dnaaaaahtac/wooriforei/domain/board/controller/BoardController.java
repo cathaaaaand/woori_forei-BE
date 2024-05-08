@@ -86,6 +86,7 @@ public class BoardController {
             @PathVariable Long boardId) {
 
         boardService.boardLike(userDetails.getUser(), boardId);
+
         return ResponseEntity.ok().body(CommonResponse.of("게시글 좋아요/삭제 성공", null));
     }
 
