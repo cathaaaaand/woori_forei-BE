@@ -98,7 +98,7 @@ public class AuthService {
         newUser.setMbti(registerRequestDTO.getMbti());
         newUser.setBirthday(registerRequestDTO.getBirthday());
         newUser.setNation(registerRequestDTO.getNation());
-        newUser.setIntroduction(registerRequestDTO.getIntroduction());
+        newUser.setDescription(registerRequestDTO.getIntroduction());
         newUser.setAgreed(registerRequestDTO.getIsAgreed());
         newUser.setAdmin(registerRequestDTO.getIsAdmin());
 
@@ -122,7 +122,7 @@ public class AuthService {
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
-                .introduction(newUser.getIntroduction())
+                .introduction(newUser.getDescription())
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())
                 .nation(newUser.getNation())
