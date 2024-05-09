@@ -29,10 +29,10 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comment;
 
-    @Column
+    @Column(length = 100)
     private String title;
 
-    @Column
+    @Column(length = 1000)
     private String content;
 
     private int boardLike;
