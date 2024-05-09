@@ -45,7 +45,7 @@ public class User extends BaseTimeEntity {
     private Boolean isAdmin;
 
     @Column(length = 300)
-    private String introduction;
+    private String description;
 
     @Column(length = 4)
     private String mbti;
@@ -92,8 +92,8 @@ public class User extends BaseTimeEntity {
         isAuthenticated = authenticated;
     }
 
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
+    public void setDescription(String introduction) {
+        this.description = introduction;
     }
 
     public void setMbti(String mbti) {

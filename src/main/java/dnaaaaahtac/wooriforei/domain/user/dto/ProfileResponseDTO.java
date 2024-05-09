@@ -15,7 +15,7 @@ public class ProfileResponseDTO {
 
     private String email;
 
-    private String introduction;
+    private String description;
 
     private String mbti;
 
