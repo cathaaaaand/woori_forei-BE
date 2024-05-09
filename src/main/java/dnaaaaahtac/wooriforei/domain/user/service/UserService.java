@@ -28,7 +28,7 @@ public class UserService {
                 .username(newUser.getUsername())
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())
-                .introduction(newUser.getIntroduction())
+                .description(newUser.getDescription())
                 .mbti(newUser.getMbti())
                 .birthday(newUser.getBirthday())
                 .nation(newUser.getNation())
@@ -51,7 +51,7 @@ public class UserService {
         newUser.setUsername(profileRequestDTO.getUsername());
         newUser.setNickname(profileRequestDTO.getNickname());
         newUser.setEmail(profileRequestDTO.getEmail());
-        newUser.setIntroduction(profileRequestDTO.getIntroduction());
+        newUser.setDescription(profileRequestDTO.getDescription());
         newUser.setMbti(profileRequestDTO.getMbti());
         newUser.setBirthday(profileRequestDTO.getBirthday());
         newUser.setNation(profileRequestDTO.getNation());
