@@ -52,6 +52,7 @@ public class UserService {
         newUser.setNickname(profileRequestDTO.getNickname());
         newUser.setEmail(profileRequestDTO.getEmail());
         newUser.setDescription(profileRequestDTO.getDescription());
+
         newUser.setMbti(profileRequestDTO.getMbti());
         newUser.setBirthday(profileRequestDTO.getBirthday());
         newUser.setNation(profileRequestDTO.getNation());
