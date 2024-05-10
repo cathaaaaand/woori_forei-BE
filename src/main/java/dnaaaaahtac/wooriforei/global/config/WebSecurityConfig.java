@@ -69,6 +69,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/openAPI/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/aws").permitAll()
+                        .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가

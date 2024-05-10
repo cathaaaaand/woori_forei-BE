@@ -49,11 +49,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception exception) {
-            log.error("Security issue: {}", exception.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            response.setContentType("application/json");
             response.getWriter().write(objectMapper.writeValueAsString(ErrorCode.INVALID_JWT_TOKEN));
-            return; // 필터 체인을 더 이상 진행하지 않고 종료
+
+            return;
         }
 
         filterChain.doFilter(request, response);
