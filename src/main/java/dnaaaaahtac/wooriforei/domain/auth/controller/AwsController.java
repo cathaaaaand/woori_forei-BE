@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://cat.wooriforei.info/", "http://localhost:3000", "https://www.wooriforei.info/"})
 public class AwsController {
 
     @GetMapping("/aws")
