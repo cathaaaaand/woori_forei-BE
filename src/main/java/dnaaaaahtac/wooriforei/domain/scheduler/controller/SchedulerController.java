@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/schedulers")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"https://cat.wooriforei.info/", "http://localhost:3000", "https://www.wooriforei.info/"})
 public class SchedulerController {
 
     private final SchedulerService schedulerService;
