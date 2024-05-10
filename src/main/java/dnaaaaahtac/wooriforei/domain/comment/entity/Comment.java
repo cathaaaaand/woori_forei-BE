@@ -24,6 +24,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    @Column(length = 500)
     private String content;
 
     private LocalDateTime createAt;

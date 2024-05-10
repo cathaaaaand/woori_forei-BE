@@ -234,7 +234,7 @@ public class BoardService {
         if (boardRequestDTO.getContent().isEmpty()) {
             throw new CustomException(ErrorCode.CONTENT_REQUIRED);
         }
-        if (boardRequestDTO.getTitle().length() > 225) {
+        if (boardRequestDTO.getTitle().length() > 100) {
             throw new CustomException(ErrorCode.TITLE_TOO_LONG);
         }
         if (boardRequestDTO.getContent().length() > 1000) {
