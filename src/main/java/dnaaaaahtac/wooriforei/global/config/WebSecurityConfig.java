@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtAuthorizationFilter;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,23 +58,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 정책을 Stateless로 설정
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/test-cors").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/faqs/**").permitAll()
-                        .requestMatchers("/api/openAPI/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/aws").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/faqs/**", "/api/openAPI/**", "/ws/**", "/aws").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
-                        .anyRequest().authenticated() // 나머지 경로는 인증 필요
-                )
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 여기서 람다 표현식 제거하고 빈을 참조하도록 변경
-        // .cors(cors -> cors.configurationSource(request -> { ... })) 부분을 삭제
-        ;
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
+
 }
