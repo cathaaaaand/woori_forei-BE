@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
@@ -42,10 +44,11 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://www.wooriforei.info"));
+        configuration.setAllowedOriginPatterns(
+                Arrays.asList("http://localhost:3000", "https://www.wooriforei.info", "https://cat.wooriforei.info"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.addExposedHeader("Authorization"); // Authorization 헤더 노출
+        configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -60,8 +63,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/faqs/**", "/api/openAPI/**", "/ws/**", "/aws", "/api/users/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
