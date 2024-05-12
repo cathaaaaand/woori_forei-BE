@@ -241,6 +241,7 @@ public class BoardService {
     }
 
     private void validation(BoardRequestDTO boardRequestDTO) {
+
         if (boardRequestDTO.getTitle().isEmpty()) {
             throw new CustomException(ErrorCode.TITLE_REQUIRED);
         }
