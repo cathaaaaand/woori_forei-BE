@@ -1,5 +1,8 @@
 package dnaaaaahtac.wooriforei.domain.user.service;
 
+import dnaaaaahtac.wooriforei.domain.board.repository.BoardRepository;
+import dnaaaaahtac.wooriforei.domain.comment.repository.CommentRepository;
+import dnaaaaahtac.wooriforei.domain.scheduler.repository.SchedulerMemberRepository;
 import dnaaaaahtac.wooriforei.domain.user.dto.PasswordUpdateRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.ProfileRequestDTO;
 import dnaaaaahtac.wooriforei.domain.user.dto.ProfileResponseDTO;
@@ -12,32 +15,63 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final SchedulerMemberRepository schedulerMemberRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
     private final PasswordEncoder passwordEncoder;
 
     public ProfileResponseDTO getProfile(Long userId) {
-        User newUser = userRepository.findById(userId)
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
+        // SchedulerMemberRepository에서 스케줄러 아이디와 스케줄러 이름을 조회
+        List<ProfileResponseDTO.SchedulerDTO> schedulers = schedulerMemberRepository.findSchedulerInfoByUserId(userId).stream()
+                .map(result -> ProfileResponseDTO.SchedulerDTO.builder()
+                        .schedulerId((Long) result[0])
+                        .schedulerName((String) result[1])
+                        .build())
+                .collect(Collectors.toList());
+
+        List<ProfileResponseDTO.BoardDTO> boards = boardRepository.findByUserId(userId).stream()
+                .map(board -> ProfileResponseDTO.BoardDTO.builder()
+                        .boardId(board.getBoardId())
+                        .boardTitle(board.getTitle())
+                        .build())
+                .collect(Collectors.toList());
+
+        List<ProfileResponseDTO.CommentDTO> comments = commentRepository.findByUser_UserId(userId).stream()
+                .map(comment -> ProfileResponseDTO.CommentDTO.builder()
+                        .commentId(comment.getCommentId())
+                        .commentContent(comment.getContent())
+                        .build())
+                .collect(Collectors.toList());
+
         return ProfileResponseDTO.builder()
-                .userId(newUser.getUserId())
-                .username(newUser.getUsername())
-                .nickname(newUser.getNickname())
-                .email(newUser.getEmail())
-                .description(newUser.getDescription())
-                .mbti(newUser.getMbti())
-                .birthday(newUser.getBirthday())
-                .nation(newUser.getNation())
-                .schedulerId(null)
-                .boardId(null)
-                .commentId(null)
-                .isAdmin(newUser.getIsAdmin())
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .description(user.getDescription())
+                .mbti(user.getMbti())
+                .birthday(user.getBirthday())
+                .nation(user.getNation())
+                .schedulers(schedulers)
+                .boards(boards)
+                .comments(comments)
+                .isAdmin(user.getIsAdmin())
+                .image(user.getImage())
                 .build();
     }
+
 
     @Transactional
     public void updateProfile(Long userId, ProfileRequestDTO profileRequestDTO) {
