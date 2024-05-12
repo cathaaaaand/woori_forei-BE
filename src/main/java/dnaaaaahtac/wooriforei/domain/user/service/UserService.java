@@ -75,6 +75,7 @@ public class UserService {
 
     @Transactional
     public void updateProfile(Long userId, ProfileRequestDTO profileRequestDTO) {
+
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
@@ -96,6 +97,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long userId, PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
+
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
@@ -117,6 +119,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId, String password) {
+
         User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
