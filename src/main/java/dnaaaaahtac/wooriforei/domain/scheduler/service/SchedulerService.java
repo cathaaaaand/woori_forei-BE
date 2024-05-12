@@ -51,6 +51,7 @@ public class SchedulerService {
             throw new CustomException(ErrorCode.INVALID_END_DATE);
         }
 
+        // 스케줄러 객체 생성
         Scheduler scheduler = new Scheduler();
         scheduler.setSchedulerName(requestDTO.getSchedulerName());
         scheduler.setStartDate(requestDTO.getStartDate());
@@ -58,15 +59,15 @@ public class SchedulerService {
 
         Scheduler savedScheduler = schedulerRepository.save(scheduler);
 
+        // 멤버 이메일로 사용자 검색
         List<User> users = userRepository.findByEmailIn(requestDTO.getMemberEmails());
         if (users.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION);
         }
 
+        // 스케줄러 멤버로 사용자 추가
         users.forEach(user -> {
             SchedulerMember member = new SchedulerMember(savedScheduler, user);
-            member.setScheduler(savedScheduler);
-            member.setUser(user);
             schedulerMemberRepository.save(member);
         });
 
@@ -76,6 +77,7 @@ public class SchedulerService {
 
         return getSchedulerResponseDTO(savedScheduler, memberDetails);
     }
+
 
     @Transactional
     public SchedulerResponseDTO getSchedulerById(Long schedulerId) {

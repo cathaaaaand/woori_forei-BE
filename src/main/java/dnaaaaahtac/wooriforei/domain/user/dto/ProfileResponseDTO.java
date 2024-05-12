@@ -1,7 +1,10 @@
 package dnaaaaahtac.wooriforei.domain.user.dto;
 
+import dnaaaaahtac.wooriforei.domain.image.entity.Image;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -23,13 +26,34 @@ public class ProfileResponseDTO {
 
     private String nation;
 
-    private Long schedulerId;   // 스케줄러 ID (미구현)
+    private List<SchedulerDTO> schedulers;
 
-    private Long boardId;       // 보드 ID (미구현)
+    private List<BoardDTO> boards;
 
-    private Long commentId;     // 댓글 ID (미구현)
+    private List<CommentDTO> comments;
 
-    private String image;       // 이미지 URL (미구현)
+    private Image image;
 
     private Boolean isAdmin;
+
+    @Getter
+    @Builder
+    public static class SchedulerDTO {
+        private Long schedulerId;
+        private String schedulerName;
+    }
+
+    @Getter
+    @Builder
+    public static class BoardDTO {
+        private Long boardId;
+        private String boardTitle;
+    }
+
+    @Getter
+    @Builder
+    public static class CommentDTO {
+        private Long commentId;
+        private String commentContent;
+    }
 }
