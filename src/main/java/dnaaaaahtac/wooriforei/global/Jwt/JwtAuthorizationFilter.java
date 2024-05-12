@@ -34,10 +34,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         log.info("JwtAuthorizationFilter is triggered for URI: {}", request.getRequestURI());
 
-        if (request.getRequestURI().equals("/test-cors")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (request.getRequestURI().equals("/test-cors")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         String token = jwtUtil.resolveToken(request);
         if (token != null) {
