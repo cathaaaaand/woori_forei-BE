@@ -57,8 +57,15 @@ public class BoardService {
         board.setModifiedAt(LocalDateTime.now());
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            List<BoardImage> boardImageList = saveBoardImages(multipartFile, board);
-            board.setBoardImage(boardImageList);
+            // 실제로 파일 데이터를 포함하고 있는 파일만 처리
+            List<MultipartFile> validFiles = multipartFile.stream()
+                    .filter(multipartFiles -> !multipartFiles.isEmpty())
+                    .collect(Collectors.toList());
+
+            if (!validFiles.isEmpty()) {
+                List<BoardImage> boardImageList = saveBoardImages(validFiles, board);
+                board.setBoardImage(boardImageList);
+            }
         }
 
         boardRepository.save(board);
@@ -149,10 +156,16 @@ public class BoardService {
         board.setModifiedAt(LocalDateTime.now());
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            List<BoardImage> existingImages = board.getBoardImage();
-            List<BoardImage> newImages = saveBoardImages(multipartFile, board);
-            existingImages.addAll(newImages);
-            board.setBoardImage(existingImages);
+            List<MultipartFile> validFiles = multipartFile.stream()
+                    .filter(multipartFiles -> !multipartFiles.isEmpty())
+                    .collect(Collectors.toList());
+
+            if (!validFiles.isEmpty()) {
+                List<BoardImage> existingImages = board.getBoardImage();
+                List<BoardImage> newImages = saveBoardImages(validFiles, board);
+                existingImages.addAll(newImages);
+                board.setBoardImage(existingImages);
+            }
         }
 
         boardRepository.save(board);
