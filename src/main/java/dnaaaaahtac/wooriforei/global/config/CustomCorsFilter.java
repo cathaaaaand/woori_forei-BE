@@ -9,26 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 @Component
 public class CustomCorsFilter extends OncePerRequestFilter {
-
-    private static final Set<String> ALLOWED_ORIGINS = new HashSet<>(Arrays.asList(
-            "https://www.wooriforei.info",
-            "https://cat.wooriforei.info",
-            "http://localhost:3000"
-    ));
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        String origin = request.getHeader("Origin");
-        if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
-            response.setHeader("Access-Control-Allow-Origin", origin);
+        // Set CORS headers only if not already set
+        if (response.getHeader("Access-Control-Allow-Origin") == null) {
+            response.addHeader("Access-Control-Allow-Origin", "*");
         }
         if (response.getHeader("Access-Control-Allow-Methods") == null) {
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
