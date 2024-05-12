@@ -1,63 +1,46 @@
 package dnaaaaahtac.wooriforei.global.Jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Slf4j
-@RequiredArgsConstructor
-@Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
-    private final ObjectMapper objectMapper;
+    private JwtUtil jwtUtil;
+    private UserDetailsService userDetailsService;
+
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
-        log.info("JwtAuthorizationFilter is triggered for URI: {}", request.getRequestURI());
-
-//        if (request.getRequestURI().equals("/test-cors")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         String token = jwtUtil.resolveToken(request);
-        if (token != null) {
+        if (token != null && jwtUtil.validationToken(token)) {
             try {
-                if (jwtUtil.validationToken(token)) {
-                    Claims claims = jwtUtil.getUserInfoFromToken(token);
-                    String username = claims.getSubject();
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                String username = jwtUtil.getUserInfoFromToken(token).getSubject();
+                if (username != null) {
+                    User user = (User) userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            user, null, user.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (Exception e) {
-                log.error("JWT processing error", e);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(objectMapper.writeValueAsString(ErrorCode.INVALID_JWT_TOKEN));
-                return;
+                SecurityContextHolder.clearContext();
             }
         }
-
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 }
