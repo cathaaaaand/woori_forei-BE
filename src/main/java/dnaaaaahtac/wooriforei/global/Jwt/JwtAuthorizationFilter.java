@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Slf4j(topic = "JWT 검증 및 인가")
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
@@ -37,22 +37,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        try {
-            String token = jwtUtil.resolveToken(request);
-            if (token != null && jwtUtil.validationToken(token)) {
-                Claims claims = jwtUtil.getUserInfoFromToken(token);
-                String username = claims.getSubject();
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtUtil.resolveToken(request);
+        if (token != null) {
+            try {
+                if (jwtUtil.validationToken(token)) {
+                    Claims claims = jwtUtil.getUserInfoFromToken(token);
+                    String username = claims.getSubject();
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                log.error("JWT processing error", e);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(objectMapper.writeValueAsString(ErrorCode.INVALID_JWT_TOKEN));
+                return;
             }
-        } catch (Exception exception) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write(objectMapper.writeValueAsString(ErrorCode.INVALID_JWT_TOKEN));
-
-            return;
         }
 
         filterChain.doFilter(request, response);
