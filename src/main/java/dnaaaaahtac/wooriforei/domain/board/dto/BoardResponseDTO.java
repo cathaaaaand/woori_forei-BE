@@ -36,7 +36,8 @@ public class BoardResponseDTO {
         this.boardId = board.getBoardId();
         this.title = board.getTitle();
         this.content = board.getContent();
-        this.accessUrls = board.getBoardImage().stream()
+        this.accessUrls = board.getBoardImage()==null || board.getBoardImage().isEmpty()?
+                null:board.getBoardImage().stream()
                 .map(BoardImage::getAccessUrl)
                 .collect(Collectors.toList());
         this.userId = board.getUser().getUserId();
@@ -51,7 +52,8 @@ public class BoardResponseDTO {
         this.boardId = board.getBoardId();
         this.title = board.getTitle();
         this.content = board.getContent();
-        this.accessUrls = board.getBoardImage().stream()
+        this.accessUrls = board.getBoardImage()==null || board.getBoardImage().isEmpty()?
+                null:board.getBoardImage().stream()
                 .map(BoardImage::getAccessUrl)
                 .collect(Collectors.toList());
         this.userId = board.getUser().getUserId();
