@@ -18,6 +18,9 @@ public class Scheduler extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long schedulerId;
 
+    @OneToMany(mappedBy = "scheduler", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SchedulerMember> schedulerMembers = new ArrayList<>();
+
     @Column(nullable = false)
     private String schedulerName;
 
