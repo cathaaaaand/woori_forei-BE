@@ -6,6 +6,7 @@ import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -53,8 +58,24 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new CustomCorsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(corsCustomize -> corsCustomize.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowCredentials(true);
+                    config.setAllowedOriginPatterns(Arrays.asList(
+                            "https://www.wooriforei.info",
+                            "https://cat.wooriforei.info",
+                            "http://localhost:3000"
+                    ));
+                    config.addAllowedMethod(HttpMethod.OPTIONS);
+                    config.addAllowedMethod(HttpMethod.GET);
+                    config.addAllowedMethod(HttpMethod.POST);
+                    config.addAllowedMethod(HttpMethod.PUT);
+                    config.addAllowedMethod(HttpMethod.DELETE);
+                    config.addAllowedHeader("Authorization, Content-Type, Accept");
+                    config.setMaxAge(3600L);
+                    return config;
+                }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/schedulers/**").authenticated()
