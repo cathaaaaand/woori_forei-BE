@@ -13,10 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {"https://cat.wooriforei.info", "http://localhost:3000", "https://www.wooriforei.info"},
+        allowCredentials = "true",
+        allowedHeaders = {"Authorization", "Content-Type", "Accept"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://cat.wooriforei.info", "http://localhost:3000", "https://www.wooriforei.info"}, allowCredentials = "true")
 public class AuthController {
 
     private final AuthService authService;
