@@ -24,7 +24,7 @@ import java.util.Date;
 public class JwtUtil {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String BEARER_PREFIX = "Bearer ";
+/*    public static final String BEARER_PREFIX = "Bearer";*/
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,10 +40,18 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String resolveToken(HttpServletRequest request) {
+  /*  public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(BEARER_PREFIX.length());
+        }
+        return null;
+    }*/
+
+    public String resolveToken(HttpServletRequest request) {
+        String token = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(token)) {
+            return token; // 접두어 없이 토큰만 반환
         }
         return null;
     }
@@ -64,7 +72,7 @@ public class JwtUtil {
 
     public String createToken(String username) {
         Date now = new Date();
-        return BEARER_PREFIX + Jwts.builder()
+        return /*BEARER_PREFIX + */Jwts.builder()
                 .setSubject(username)
                 .setExpiration(new Date(now.getTime() + 3600000)) // 1시간
                 .setIssuedAt(now)
