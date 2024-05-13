@@ -5,6 +5,7 @@ import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.domain.auth.service.EmailVerificationService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,15 @@ public class AuthController {
 
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
         String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString());
+
+        // 토큰을 쿠키에 저장
+        Cookie authCookie = new Cookie("Authorization", jwtToken);
+        authCookie.setHttpOnly(true); // 쿠키를 HTTP 통신에서만 사용하도록 설정
+        authCookie.setSecure(true); // HTTPS를 통해서만 쿠키 전송
+        authCookie.setPath("/"); // 쿠키가 전송되는 경로
+        authCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 만료 시간 설정 (예: 7일)
+        response.addCookie(authCookie); // 응답에 쿠키 추가
+
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
 
         return ResponseEntity.ok()
