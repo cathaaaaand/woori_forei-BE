@@ -37,7 +37,7 @@ public class CustomCorsFilter extends OncePerRequestFilter {
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         }
         if (response.getHeader("Access-Control-Allow-Headers") == null) {
-            response.addHeader("Access-Control-Allow-Headers", "Authorization, Content-type, Accept");
+            response.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
         }
         if (response.getHeader("Access-Control-Allow-Credentials") == null) {
             response.addHeader("Access-Control-Allow-Credentials", "true");
