@@ -44,8 +44,7 @@ public class AuthController {
             @RequestBody @Valid LoginRequestDTO requestDTO, HttpServletResponse response) {
 
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
-        String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString());
-
+        String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString()).trim();
 
         // 토큰을 쿠키에 저장
         Cookie authCookie = new Cookie("Authorization", jwtToken);
