@@ -19,13 +19,17 @@ import java.util.List;
 @Component
 public class CustomCorsFilter extends OncePerRequestFilter {
 
-    private static final List<String> allowedOrigins = Arrays.asList("https://www.wooriforei.info", "https://cat.wooriforei.info", "http://localhost:3000");
+    private static final List<String> allowedOrigins = Arrays.asList(
+            "https://www.wooriforei.info",
+            "https://cat.wooriforei.info",
+            "http://localhost:3000");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String requestOrigin = request.getHeader("Origin");
+
         if (requestOrigin == null || allowedOrigins.contains(requestOrigin)) {
             response.setHeader("Access-Control-Allow-Origin", (requestOrigin != null) ? requestOrigin : "*");
         }
@@ -33,16 +37,20 @@ public class CustomCorsFilter extends OncePerRequestFilter {
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         }
         if (response.getHeader("Access-Control-Allow-Headers") == null) {
-            response.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
+            response.addHeader("Access-Control-Allow-Headers", "Authorization, Content-type, Accept");
         }
         if (response.getHeader("Access-Control-Allow-Credentials") == null) {
             response.addHeader("Access-Control-Allow-Credentials", "true");
         }
 
-        try {
-            filterChain.doFilter(request, response);
-        } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            try {
+                filterChain.doFilter(request, response);
+            } catch (java.io.IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
