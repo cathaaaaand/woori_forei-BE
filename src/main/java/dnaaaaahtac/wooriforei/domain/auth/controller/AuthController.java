@@ -14,6 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {"https://cat.wooriforei.info", "http://localhost:3000", "https://www.wooriforei.info"},
+        allowCredentials = "true",
+        allowedHeaders = {"Authorization", "Content-Type", "Accept"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -40,7 +46,7 @@ public class AuthController {
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
         String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString());
 
-/*
+
         // 토큰을 쿠키에 저장
         Cookie authCookie = new Cookie("Authorization", jwtToken);
         authCookie.setHttpOnly(true); // 쿠키를 HTTP 통신에서만 사용하도록 설정
@@ -48,7 +54,7 @@ public class AuthController {
         authCookie.setPath("/"); // 쿠키가 전송되는 경로
         authCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 만료 시간 설정 (예: 7일)
         response.addCookie(authCookie); // 응답에 쿠키 추가
-*/
+
 
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
 
