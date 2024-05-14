@@ -5,6 +5,7 @@ import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.domain.auth.service.EmailVerificationService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {"https://cat.wooriforei.info", "http://localhost:3000", "https://www.wooriforei.info"},
+        allowCredentials = "true",
+        allowedHeaders = {"Authorization", "Content-Type", "Accept"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://cat.wooriforei.info/", "http://localhost:3000", "https://www.wooriforei.info/"})
-
 public class AuthController {
 
     private final AuthService authService;
@@ -39,7 +44,21 @@ public class AuthController {
             @RequestBody @Valid LoginRequestDTO requestDTO, HttpServletResponse response) {
 
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
-        String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString());
+        String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString()).trim();
+
+        // 쿠키를 구성하는 문자열 생성
+        String cookieValue = "Authorization=" + jwtToken
+                + "; Path=/"
+                + "; HttpOnly"
+                + "; Secure"
+                + "; Max-Age=" + (7 * 24 * 60 * 60) // 예: 7일
+                + "; SameSite=None" // 크로스 사이트 요청에 쿠키를 포함시키기 위해 SameSite를 None으로 설정
+                + "; Domain=.wooriforei.info"; // 도메인 설정 추가
+
+        // 응답에 쿠키 헤더 설정
+        response.setHeader("Set-Cookie", cookieValue);
+
+
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
 
         return ResponseEntity.ok()
