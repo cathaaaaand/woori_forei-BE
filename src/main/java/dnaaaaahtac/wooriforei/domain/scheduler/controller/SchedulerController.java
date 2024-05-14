@@ -3,10 +3,12 @@ package dnaaaaahtac.wooriforei.domain.scheduler.controller;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
+import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,13 +28,15 @@ public class SchedulerController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<SchedulerResponseDTO>> createScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody @Valid SchedulerRequestDTO schedulerRequestDTO) {
 
-        SchedulerResponseDTO schedulerResponse = schedulerService.createScheduler(schedulerRequestDTO);
+        SchedulerResponseDTO schedulerResponse = schedulerService.createScheduler(userDetails, schedulerRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러 생성 성공", schedulerResponse));
     }
+
 
     @GetMapping("/{schedulerId}")
     public ResponseEntity<CommonResponse<SchedulerResponseDTO>> getScheduler(

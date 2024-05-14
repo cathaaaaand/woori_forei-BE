@@ -10,6 +10,7 @@ import dnaaaaahtac.wooriforei.domain.user.entity.User;
 import dnaaaaahtac.wooriforei.domain.user.repository.UserRepository;
 import dnaaaaahtac.wooriforei.global.exception.CustomException;
 import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
+import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class SchedulerService {
     private final SchedulerSeoulGoodsRepository schedulerSeoulGoodsRepository;
 
     @Transactional
-    public SchedulerResponseDTO createScheduler(SchedulerRequestDTO requestDTO) {
+    public SchedulerResponseDTO createScheduler(UserDetailsImpl userDetails, SchedulerRequestDTO requestDTO) {
 
         if (requestDTO.getStartDate().isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
@@ -58,6 +59,12 @@ public class SchedulerService {
         scheduler.setEndDate(requestDTO.getEndDate());
 
         Scheduler savedScheduler = schedulerRepository.save(scheduler);
+
+        // 인증된 사용자 정보를 스케줄러 멤버로 추가
+        User creator = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        SchedulerMember creatorMember = new SchedulerMember(savedScheduler, creator);
+        schedulerMemberRepository.save(creatorMember);
 
         // 멤버 이메일로 사용자 검색
         List<User> users = userRepository.findByEmailIn(requestDTO.getMemberEmails());
