@@ -43,6 +43,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/schedulers/**").authenticated()
+                        .requestMatchers("auth/api/comments/**").authenticated()
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
