@@ -46,7 +46,7 @@ public class AuthController {
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
         String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString()).trim();
 
-        // 쿠키를 구성하는 문자열 생성
+/*        // 쿠키를 구성하는 문자열 생성
         String cookieValue = "Authorization=" + jwtToken
                 + "; Path=/"
                 + "; HttpOnly"
@@ -56,7 +56,7 @@ public class AuthController {
                 + "; Domain=.wooriforei.info"; // 도메인 설정 추가
 
         // 응답에 쿠키 헤더 설정
-        response.setHeader("Set-Cookie", cookieValue);
+        response.setHeader("Set-Cookie", cookieValue);*/
 
 
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
