@@ -39,12 +39,12 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> new org.springframework.web.cors.CorsConfiguration().applyPermitDefaultValues()))
+                .addFilterBefore(new CustomCorsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/schedulers/**").authenticated()
                         .anyRequest().permitAll())
-                .addFilterBefore(new CustomCorsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
