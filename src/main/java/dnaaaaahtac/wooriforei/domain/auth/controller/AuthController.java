@@ -46,17 +46,17 @@ public class AuthController {
         LoginResponseDTO loginResponseDTO = authService.login(requestDTO);
         String jwtToken = jwtUtil.createToken(loginResponseDTO.getUserId().toString()).trim();
 
-/*        // 쿠키를 구성하는 문자열 생성
+        // 쿠키를 구성하는 문자열 생성
         String cookieValue = "Authorization=" + jwtToken
                 + "; Path=/"
                 + "; HttpOnly"
                 + "; Secure"
-                + "; Max-Age=" + (7 * 24 * 60 * 60) // 예: 7일
-                + "; SameSite=None" // 크로스 사이트 요청에 쿠키를 포함시키기 위해 SameSite를 None으로 설정
-                + "; Domain=.wooriforei.info"; // 도메인 설정 추가
+                + "; Max-Age=" + (24 * 60 * 60) // 1일
+                + "; SameSite=None"
+                + "; Domain=.wooriforei.info";
 
         // 응답에 쿠키 헤더 설정
-        response.setHeader("Set-Cookie", cookieValue);*/
+        response.setHeader("Set-Cookie", cookieValue);
 
 
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
