@@ -2,37 +2,52 @@ package dnaaaaahtac.wooriforei.global.config;
 
 
 import io.jsonwebtoken.io.IOException;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Component
-public class CustomCorsFilter implements Filter {
+public class CustomCorsFilter extends OncePerRequestFilter {
+
+    private static final List<String> allowedOrigins = Arrays.asList(
+            "https://www.wooriforei.info",
+            "https://cat.wooriforei.info",
+            "http://localhost:3000");
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException, java.io.IOException {
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-        httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
-        httpResponse.setHeader("Access-Control-Max-Age", "3600");
-        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");
+        String requestOrigin = request.getHeader("Origin");
 
-        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
-            httpResponse.setStatus(HttpServletResponse.SC_OK);
-            return;
+        if (requestOrigin == null || allowedOrigins.contains(requestOrigin)) {
+            response.setHeader("Access-Control-Allow-Origin", (requestOrigin != null) ? requestOrigin : "*");
+        }
+        if (response.getHeader("Access-Control-Allow-Methods") == null) {
+            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        }
+        if (response.getHeader("Access-Control-Allow-Headers") == null) {
+            response.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
+        }
+        if (response.getHeader("Access-Control-Allow-Credentials") == null) {
+            response.addHeader("Access-Control-Allow-Credentials", "true");
         }
 
-        chain.doFilter(request, response);
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
-
-    @Override
-    public void destroy() {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            try {
+                filterChain.doFilter(request, response);
+            } catch (java.io.IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
+
