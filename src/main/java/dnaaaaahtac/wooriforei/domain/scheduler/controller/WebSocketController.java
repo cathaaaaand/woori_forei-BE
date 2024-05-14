@@ -3,11 +3,17 @@ package dnaaaaahtac.wooriforei.domain.scheduler.controller;
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
 import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
+import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,14 +31,15 @@ public class WebSocketController {
         return CommonResponse.of("스케줄러에 사용자 추가 성공", updatedScheduler);
     }
 
-    @MessageMapping("/scheduler/create")
-    @SendTo("/topic/schedulerResponse")
-    public CommonResponse<SchedulerResponseDTO> createScheduler(
-            SchedulerRequestDTO schedulerRequestDTO) {
+    @PostMapping("/create-scheduler")
+    public ResponseEntity<CommonResponse<SchedulerResponseDTO>> createScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody @Valid SchedulerRequestDTO schedulerRequestDTO) {
 
-        SchedulerResponseDTO schedulerResponse = schedulerService.createScheduler(schedulerRequestDTO);
+        SchedulerResponseDTO schedulerResponse = schedulerService.createScheduler(userDetails, schedulerRequestDTO);
 
-        return CommonResponse.of("스케줄러 생성 성공", schedulerResponse);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.of("스케줄러 생성 성공", schedulerResponse));
     }
 
     @MessageMapping("/scheduler/update")
