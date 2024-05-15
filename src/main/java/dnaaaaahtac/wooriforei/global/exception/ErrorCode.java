@@ -48,6 +48,7 @@ public enum ErrorCode {
     NOT_FOUND_FAQ(404, "요청한 FAQ를 찾을 수 없습니다."),
 
     // Scheduler
+    INVALID_DATE_FORMAT(400, "요청 형식이 올바르지 않습니다."),
     INVALID_START_DATE(400, "시작일이 현재 시간 이전일 수 없습니다."),
     INVALID_END_DATE(400, "종료일이 시작일 이전일 수 없습니다."),
     NOT_FOUND_SCHEDULER(404, "요청한 스케줄러를 찾을 수 없습니다."),
