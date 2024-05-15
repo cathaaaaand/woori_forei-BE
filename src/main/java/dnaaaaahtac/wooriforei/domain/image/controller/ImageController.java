@@ -11,6 +11,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@CrossOrigin(
+        origins = {"https://cat.wooriforei.info", "http://localhost:3000", "https://www.wooriforei.info"},
+        allowCredentials = "true",
+        allowedHeaders = {"Authorization", "Content-Type", "Accept"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/images/profile")
