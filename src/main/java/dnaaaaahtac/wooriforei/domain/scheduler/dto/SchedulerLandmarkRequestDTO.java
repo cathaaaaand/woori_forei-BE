@@ -12,20 +12,20 @@ public class SchedulerLandmarkRequestDTO {
     private Long landmarkId;
 
     @NotNull
-    private LocalDateTime visitStart;
+    private String visitStart;
 
     @NotNull
-    private LocalDateTime visitEnd;
+    private String visitEnd;
 
     public void setLandmarkId(Long landmarkId) {
         this.landmarkId = landmarkId;
     }
 
-    public void setVisitStart(LocalDateTime visitStart) {
+    public void setVisitStart(String visitStart) {
         this.visitStart = visitStart;
     }
 
-    public void setVisitEnd(LocalDateTime visitEnd) {
+    public void setVisitEnd(String visitEnd) {
         this.visitEnd = visitEnd;
     }
 }

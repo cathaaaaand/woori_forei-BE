@@ -75,5 +75,4 @@ public class Scheduler extends BaseTimeEntity {
 
         return events;
     }
-
 }

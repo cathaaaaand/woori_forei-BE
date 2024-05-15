@@ -18,10 +18,10 @@ public class SchedulerRequestDTO {
     private String schedulerName;
 
     @NotNull(message = "시작 날짜는 필수입니다.", groups = Create.class)
-    private LocalDateTime startDate;
+    private String startDate;
 
     @NotNull(message = "종료 날짜는 필수입니다.", groups = Create.class)
-    private LocalDateTime endDate;
+    private String endDate;
 
     private List<String> memberEmails;
 
@@ -39,11 +39,11 @@ public class SchedulerRequestDTO {
         this.schedulerName = schedulerName;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 
