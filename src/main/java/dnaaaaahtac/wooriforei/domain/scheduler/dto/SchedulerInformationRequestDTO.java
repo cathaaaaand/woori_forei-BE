@@ -9,19 +9,19 @@ public class SchedulerInformationRequestDTO {
 
     private Long informationId;
 
-    private LocalDateTime visitStart;
+    private String visitStart;
 
-    private LocalDateTime visitEnd;
+    private String visitEnd;
 
     public void setInformationId(Long informationId) {
         this.informationId = informationId;
     }
 
-    public void setVisitStart(LocalDateTime visitStart) {
+    public void setVisitStart(String visitStart) {
         this.visitStart = visitStart;
     }
 
-    public void setVisitEnd(LocalDateTime visitEnd) {
+    public void setVisitEnd(String visitEnd) {
         this.visitEnd = visitEnd;
     }
 }

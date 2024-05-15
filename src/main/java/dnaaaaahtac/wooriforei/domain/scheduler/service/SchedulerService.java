@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,38 +42,47 @@ public class SchedulerService {
     private final SeoulGoodsRepository seoulGoodsRepository;
     private final SchedulerSeoulGoodsRepository schedulerSeoulGoodsRepository;
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    private LocalDateTime parseStringToLocalDateTime(String dateTime) {
+        return LocalDateTime.parse(dateTime, formatter);
+    }
+
+    private String formatLocalDateTime(LocalDateTime dateTime) {
+        return dateTime.format(formatter);
+    }
+
     @Transactional
     public SchedulerResponseDTO createScheduler(UserDetailsImpl userDetails, SchedulerRequestDTO requestDTO) {
 
-        if (requestDTO.getStartDate().isBefore(LocalDateTime.now())) {
+        LocalDateTime startDate = parseStringToLocalDateTime(requestDTO.getStartDate());
+        LocalDateTime endDate = parseStringToLocalDateTime(requestDTO.getEndDate());
+
+        if (startDate.isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
         }
 
-        if (requestDTO.getEndDate().isBefore(requestDTO.getStartDate())) {
+        if (endDate.isBefore(startDate)) {
             throw new CustomException(ErrorCode.INVALID_END_DATE);
         }
 
-        // 스케줄러 객체 생성
         Scheduler scheduler = new Scheduler();
         scheduler.setSchedulerName(requestDTO.getSchedulerName());
-        scheduler.setStartDate(requestDTO.getStartDate());
-        scheduler.setEndDate(requestDTO.getEndDate());
+        scheduler.setStartDate(startDate);
+        scheduler.setEndDate(endDate);
 
         Scheduler savedScheduler = schedulerRepository.save(scheduler);
 
-        // 인증된 사용자 정보를 스케줄러 멤버로 추가
         User creator = userRepository.findById(userDetails.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
         SchedulerMember creatorMember = new SchedulerMember(savedScheduler, creator);
         schedulerMemberRepository.save(creatorMember);
 
-        // 멤버 이메일로 사용자 검색
         List<User> users = userRepository.findByEmailIn(requestDTO.getMemberEmails());
         if (users.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION);
         }
 
-        // 스케줄러 멤버로 사용자 추가
         users.forEach(user -> {
             SchedulerMember member = new SchedulerMember(savedScheduler, user);
             schedulerMemberRepository.save(member);
@@ -145,8 +155,8 @@ public class SchedulerService {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 activity.getActivity().getActivityId(),
                 activity.getActivity().getSvcnm(),
-                activity.getVisitStart(),
-                activity.getVisitEnd(),
+                formatLocalDateTime(activity.getVisitStart()),
+                formatLocalDateTime(activity.getVisitEnd()),
                 "activity"
         );
     }
@@ -156,8 +166,8 @@ public class SchedulerService {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 hotel.getHotel().getHotelId(),
                 hotel.getHotel().getNameKor(),
-                hotel.getStayStart(),
-                hotel.getStayEnd(),
+                formatLocalDateTime(hotel.getStayStart()),
+                formatLocalDateTime(hotel.getStayEnd()),
                 "hotel"
         );
     }
@@ -167,20 +177,19 @@ public class SchedulerService {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 information.getInformation().getInformationId(),
                 information.getInformation().getTrsmicnm(),
-                information.getVisitStart(),
-                information.getVisitEnd(),
+                formatLocalDateTime(information.getVisitStart()),
+                formatLocalDateTime(information.getVisitEnd()),
                 "information"
         );
     }
-
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertLandmarkToOpenAPIDetails(SchedulerLandmark landmark) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 landmark.getLandmark().getRandmarkId(),
                 landmark.getLandmark().getPostSj(),
-                landmark.getVisitStart(),
-                landmark.getVisitEnd(),
+                formatLocalDateTime(landmark.getVisitStart()),
+                formatLocalDateTime(landmark.getVisitEnd()),
                 "landmark"
         );
     }
@@ -190,8 +199,8 @@ public class SchedulerService {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 restaurant.getRestaurant().getRestaurantId(),
                 restaurant.getRestaurant().getPostSj(),
-                restaurant.getVisitStart(),
-                restaurant.getVisitEnd(),
+                formatLocalDateTime(restaurant.getVisitStart()),
+                formatLocalDateTime(restaurant.getVisitEnd()),
                 "restaurant"
         );
     }
@@ -201,8 +210,8 @@ public class SchedulerService {
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
                 seoulGoods.getSeoulGoods().getSeoulGoodsId(),
                 seoulGoods.getSeoulGoods().getNm(),
-                seoulGoods.getVisitStart(),
-                seoulGoods.getVisitEnd(),
+                formatLocalDateTime(seoulGoods.getVisitStart()),
+                formatLocalDateTime(seoulGoods.getVisitEnd()),
                 "seoulGoods"
         );
     }
@@ -215,8 +224,8 @@ public class SchedulerService {
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
         response.setSchedulerName(scheduler.getSchedulerName());
-        response.setStartDate(scheduler.getStartDate());
-        response.setEndDate(scheduler.getEndDate());
+        response.setStartDate(formatLocalDateTime(scheduler.getStartDate()));
+        response.setEndDate(formatLocalDateTime(scheduler.getEndDate()));
         response.setCreatedAt(scheduler.getCreatedAt());
         response.setModifiedAt(scheduler.getModifiedAt());
         response.setMembers(memberDetails);
@@ -252,21 +261,24 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        if (requestDTO.getStartDate() != null && requestDTO.getStartDate().isBefore(LocalDateTime.now())) {
+        LocalDateTime startDate = requestDTO.getStartDate() != null ? parseStringToLocalDateTime(requestDTO.getStartDate()) : null;
+        LocalDateTime endDate = requestDTO.getEndDate() != null ? parseStringToLocalDateTime(requestDTO.getEndDate()) : null;
+
+        if (startDate != null && startDate.isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
         }
-        if (requestDTO.getEndDate() != null && requestDTO.getEndDate().isBefore(requestDTO.getStartDate())) {
+        if (endDate != null && endDate.isBefore(startDate)) {
             throw new CustomException(ErrorCode.INVALID_END_DATE);
         }
 
         if (requestDTO.getSchedulerName() != null) {
             scheduler.setSchedulerName(requestDTO.getSchedulerName());
         }
-        if (requestDTO.getStartDate() != null) {
-            scheduler.setStartDate(requestDTO.getStartDate());
+        if (startDate != null) {
+            scheduler.setStartDate(startDate);
         }
-        if (requestDTO.getEndDate() != null) {
-            scheduler.setEndDate(requestDTO.getEndDate());
+        if (endDate != null) {
+            scheduler.setEndDate(endDate);
         }
 
         updateSchedulerMembers(scheduler, requestDTO.getMemberEmails());
@@ -302,8 +314,8 @@ public class SchedulerService {
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
         response.setSchedulerName(scheduler.getSchedulerName());
-        response.setStartDate(scheduler.getStartDate());
-        response.setEndDate(scheduler.getEndDate());
+        response.setStartDate(formatLocalDateTime(scheduler.getStartDate()));
+        response.setEndDate(formatLocalDateTime(scheduler.getEndDate()));
         response.setCreatedAt(scheduler.getCreatedAt());
         response.setModifiedAt(scheduler.getModifiedAt());
         response.setMembers(memberDetails);
@@ -339,8 +351,8 @@ public class SchedulerService {
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
         response.setSchedulerName(scheduler.getSchedulerName());
-        response.setStartDate(scheduler.getStartDate());
-        response.setEndDate(scheduler.getEndDate());
+        response.setStartDate(formatLocalDateTime(scheduler.getStartDate()));
+        response.setEndDate(formatLocalDateTime(scheduler.getEndDate()));
         response.setCreatedAt(scheduler.getCreatedAt());
         response.setModifiedAt(scheduler.getModifiedAt());
         response.setMembers(memberDetails);
@@ -367,18 +379,21 @@ public class SchedulerService {
         Activity activity = activityRepository.findById(activityDTO.getActivityId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
 
-        checkForTimeConflicts(scheduler, activityDTO.getVisitStart(), activityDTO.getVisitEnd(), activityDTO.getActivityId());
+        LocalDateTime visitStart = parseStringToLocalDateTime(activityDTO.getVisitStart());
+        LocalDateTime visitEnd = parseStringToLocalDateTime(activityDTO.getVisitEnd());
 
-        if (activityDTO.getVisitStart().isBefore(scheduler.getStartDate())) {
+        checkForTimeConflicts(scheduler, visitStart, visitEnd, activityDTO.getActivityId());
+
+        if (visitStart.isBefore(scheduler.getStartDate())) {
             throw new CustomException(ErrorCode.INVALID_START_DATE);
         }
 
-        if (activityDTO.getVisitEnd().isAfter(scheduler.getEndDate())) {
+        if (visitEnd.isAfter(scheduler.getEndDate())) {
             throw new CustomException(ErrorCode.INVALID_END_DATE);
         }
 
         SchedulerActivity schedulerActivity = new SchedulerActivity(
-                scheduler, activity, activityDTO.getVisitStart(), activityDTO.getVisitEnd());
+                scheduler, activity, visitStart, visitEnd);
         schedulerActivityRepository.save(schedulerActivity);
 
         getSchedulerResponseDTO(scheduler);
@@ -390,15 +405,15 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        checkForTimeConflicts(scheduler, hotelDTO.getStayStart(), hotelDTO.getStayEnd(), hotelDTO.getHotelId());
+        LocalDateTime stayStart = parseStringToLocalDateTime(hotelDTO.getStayStart());
+        LocalDateTime stayEnd = parseStringToLocalDateTime(hotelDTO.getStayEnd());
+
+        checkForTimeConflicts(scheduler, stayStart, stayEnd, hotelDTO.getHotelId());
 
         Hotel hotel = hotelRepository.findById(hotelDTO.getHotelId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_HOTEL));
 
-        LocalDateTime startAt = hotelDTO.getStayStart();
-        LocalDateTime endAt = hotelDTO.getStayEnd();
-
-        SchedulerHotel schedulerHotel = new SchedulerHotel(scheduler, hotel, startAt, endAt);
+        SchedulerHotel schedulerHotel = new SchedulerHotel(scheduler, hotel, stayStart, stayEnd);
         schedulerHotelRepository.save(schedulerHotel);
     }
 
@@ -408,7 +423,10 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        checkForTimeConflicts(scheduler, informationDTO.getVisitStart(), informationDTO.getVisitEnd(), informationDTO.getInformationId());
+        LocalDateTime visitStart = parseStringToLocalDateTime(informationDTO.getVisitStart());
+        LocalDateTime visitEnd = parseStringToLocalDateTime(informationDTO.getVisitEnd());
+
+        checkForTimeConflicts(scheduler, visitStart, visitEnd, informationDTO.getInformationId());
 
         Information information = informationRepository.findById(informationDTO.getInformationId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INFORMATION));
@@ -416,8 +434,8 @@ public class SchedulerService {
         SchedulerInformation schedulerInformation = new SchedulerInformation(
                 scheduler,
                 information,
-                informationDTO.getVisitStart(),
-                informationDTO.getVisitEnd());
+                visitStart,
+                visitEnd);
 
         schedulerInformationRepository.save(schedulerInformation);
     }
@@ -428,14 +446,17 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        checkForTimeConflicts(scheduler, landmarkDTO.getVisitStart(), landmarkDTO.getVisitEnd(), landmarkDTO.getLandmarkId());
+        LocalDateTime visitStart = parseStringToLocalDateTime(landmarkDTO.getVisitStart());
+        LocalDateTime visitEnd = parseStringToLocalDateTime(landmarkDTO.getVisitEnd());
+
+        checkForTimeConflicts(scheduler, visitStart, visitEnd, landmarkDTO.getLandmarkId());
 
         Landmark landmark = landmarkRepository.findById(landmarkDTO.getLandmarkId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_LANDMARK));
 
         SchedulerLandmark schedulerLandmark = new SchedulerLandmark(
                 scheduler, landmark,
-                landmarkDTO.getVisitStart(), landmarkDTO.getVisitEnd());
+                visitStart, visitEnd);
 
         schedulerLandmarkRepository.save(schedulerLandmark);
     }
@@ -446,7 +467,10 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        checkForTimeConflicts(scheduler, restaurantDTO.getVisitStart(), restaurantDTO.getVisitEnd(), restaurantDTO.getRestaurantId());
+        LocalDateTime visitStart = parseStringToLocalDateTime(restaurantDTO.getVisitStart());
+        LocalDateTime visitEnd = parseStringToLocalDateTime(restaurantDTO.getVisitEnd());
+
+        checkForTimeConflicts(scheduler, visitStart, visitEnd, restaurantDTO.getRestaurantId());
 
         Restaurant restaurant = restaurantRepository.findById(restaurantDTO.getRestaurantId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESTAURANT));
@@ -454,8 +478,8 @@ public class SchedulerService {
         SchedulerRestaurant schedulerRestaurant = new SchedulerRestaurant(
                 scheduler,
                 restaurant,
-                restaurantDTO.getVisitStart(),
-                restaurantDTO.getVisitEnd());
+                visitStart,
+                visitEnd);
 
         schedulerRestaurantRepository.save(schedulerRestaurant);
     }
@@ -466,7 +490,10 @@ public class SchedulerService {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
-        checkForTimeConflicts(scheduler, seoulGoodsDTO.getVisitStart(), seoulGoodsDTO.getVisitEnd(), seoulGoodsDTO.getGoodsId());
+        LocalDateTime visitStart = parseStringToLocalDateTime(seoulGoodsDTO.getVisitStart());
+        LocalDateTime visitEnd = parseStringToLocalDateTime(seoulGoodsDTO.getVisitEnd());
+
+        checkForTimeConflicts(scheduler, visitStart, visitEnd, seoulGoodsDTO.getGoodsId());
 
         SeoulGoods seoulGoods = seoulGoodsRepository.findById(seoulGoodsDTO.getGoodsId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SEOUL_GOODS));
@@ -474,8 +501,8 @@ public class SchedulerService {
         SchedulerSeoulGoods schedulerSeoulGoods = new SchedulerSeoulGoods(
                 scheduler,
                 seoulGoods,
-                seoulGoodsDTO.getVisitStart(),
-                seoulGoodsDTO.getVisitEnd());
+                visitStart,
+                visitEnd);
 
         schedulerSeoulGoodsRepository.save(schedulerSeoulGoods);
     }

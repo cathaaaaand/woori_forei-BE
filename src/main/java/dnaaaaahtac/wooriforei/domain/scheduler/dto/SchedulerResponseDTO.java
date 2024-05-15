@@ -13,8 +13,8 @@ public class SchedulerResponseDTO {
 
     private Long schedulerId;
     private String schedulerName;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private List<UserDetailResponseDTO> members;
@@ -24,11 +24,11 @@ public class SchedulerResponseDTO {
     public static class OpenAPIDetailsDTO {
         private Long id;
         private String name;
-        private LocalDateTime visitStart;
-        private LocalDateTime visitEnd;
+        private String visitStart;
+        private String visitEnd;
         private String type;
 
-        public OpenAPIDetailsDTO(Long id, String name, LocalDateTime visitStart, LocalDateTime visitEnd, String type) {
+        public OpenAPIDetailsDTO(Long id, String name, String visitStart, String visitEnd, String type) {
             this.id = id;
             this.name = name;
             this.visitStart = visitStart;
@@ -44,11 +44,11 @@ public class SchedulerResponseDTO {
             this.name = name;
         }
 
-        public void setVisitStart(LocalDateTime visitStart) {
+        public void setVisitStart(String visitStart) {
             this.visitStart = visitStart;
         }
 
-        public void setVisitEnd(LocalDateTime visitEnd) {
+        public void setVisitEnd(String visitEnd) {
             this.visitEnd = visitEnd;
         }
 
@@ -65,11 +65,11 @@ public class SchedulerResponseDTO {
         this.schedulerName = schedulerName;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 
