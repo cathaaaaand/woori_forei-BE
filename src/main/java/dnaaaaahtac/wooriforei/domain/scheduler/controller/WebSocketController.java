@@ -24,9 +24,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addMember")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> addMemberToScheduler(
-            Long schedulerId, String userEmail) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId, String userEmail) {
 
-        SchedulerResponseDTO updatedScheduler = schedulerService.addMemberToScheduler(schedulerId, userEmail);
+        SchedulerResponseDTO updatedScheduler = schedulerService.addMemberToScheduler(userDetails, schedulerId, userEmail);
 
         return CommonResponse.of("스케줄러에 사용자 추가 성공", updatedScheduler);
     }
@@ -45,10 +45,10 @@ public class WebSocketController {
     @MessageMapping("/scheduler/update")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> updateScheduler(
-            SchedulerRequestDTO schedulerRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRequestDTO schedulerRequestDTO) {
 
         SchedulerResponseDTO updatedScheduler
-                = schedulerService.updateScheduler(schedulerRequestDTO.getSchedulerId(), schedulerRequestDTO);
+                = schedulerService.updateScheduler(userDetails, schedulerRequestDTO.getSchedulerId(), schedulerRequestDTO);
 
         return CommonResponse.of("스케줄러 수정 성공", updatedScheduler);
     }
@@ -56,9 +56,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/delete")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> deleteScheduler(
-            Long schedulerId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
 
-        schedulerService.deleteScheduler(schedulerId);
+        schedulerService.deleteScheduler(userDetails, schedulerId);
 
         return CommonResponse.of("스케줄러 삭제 성공", null);
     }
@@ -66,9 +66,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/get")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> getScheduler(
-            Long schedulerId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
 
-        SchedulerResponseDTO scheduler = schedulerService.getSchedulerById(schedulerId);
+        SchedulerResponseDTO scheduler = schedulerService.getSchedulerById(userDetails, schedulerId);
 
         return CommonResponse.of("스케줄러 단일 조회 성공", scheduler);
     }
@@ -76,9 +76,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addActivity")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addActivityToScheduler(
-            SchedulerActivityRequestDTO activityRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerActivityRequestDTO activityRequestDTO) {
 
-        schedulerService.addActivityToScheduler(activityRequestDTO.getActivityId(), activityRequestDTO);
+        schedulerService.addActivityToScheduler(userDetails, activityRequestDTO.getActivityId(), activityRequestDTO);
 
         return CommonResponse.of("스케줄러에 문화체험 추가 성공", null);
     }
@@ -86,9 +86,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addHotel")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addHotelToScheduler(
-            SchedulerHotelRequestDTO hotelRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerHotelRequestDTO hotelRequestDTO) {
 
-        schedulerService.addHotelToScheduler(hotelRequestDTO.getHotelId(), hotelRequestDTO);
+        schedulerService.addHotelToScheduler(userDetails, hotelRequestDTO.getHotelId(), hotelRequestDTO);
 
         return CommonResponse.of("스케줄러에 호텔 추가 성공", null);
     }
@@ -96,9 +96,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addInformation")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addInformationToScheduler(
-            SchedulerInformationRequestDTO informationRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerInformationRequestDTO informationRequestDTO) {
 
-        schedulerService.addInformationToScheduler(informationRequestDTO.getInformationId(), informationRequestDTO);
+        schedulerService.addInformationToScheduler(userDetails, informationRequestDTO.getInformationId(), informationRequestDTO);
 
         return CommonResponse.of("스케줄러에 안내소 추가 성공", null);
     }
@@ -106,9 +106,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addLandmark")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addLandmarkToScheduler(
-            SchedulerLandmarkRequestDTO landmarkRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerLandmarkRequestDTO landmarkRequestDTO) {
 
-        schedulerService.addLandmarkToScheduler(landmarkRequestDTO.getLandmarkId(), landmarkRequestDTO);
+        schedulerService.addLandmarkToScheduler(userDetails, landmarkRequestDTO.getLandmarkId(), landmarkRequestDTO);
 
         return CommonResponse.of("스케줄러에 명소 추가 성공", null);
     }
@@ -116,9 +116,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addRestaurant")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addRestaurantToScheduler(
-            SchedulerRestaurantRequestDTO restaurantRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRestaurantRequestDTO restaurantRequestDTO) {
 
-        schedulerService.addRestaurantToScheduler(restaurantRequestDTO.getRestaurantId(), restaurantRequestDTO);
+        schedulerService.addRestaurantToScheduler(userDetails, restaurantRequestDTO.getRestaurantId(), restaurantRequestDTO);
 
         return CommonResponse.of("스케줄러에 맛집 추가 성공", null);
     }
@@ -126,9 +126,9 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addSeoulGoods")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addSeoulGoodsToScheduler(
-            SchedulerSeoulGoodsRequestDTO seoulGoodsRequestDTO) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerSeoulGoodsRequestDTO seoulGoodsRequestDTO) {
 
-        schedulerService.addSeoulGoodsToScheduler(seoulGoodsRequestDTO.getGoodsId(), seoulGoodsRequestDTO);
+        schedulerService.addSeoulGoodsToScheduler(userDetails, seoulGoodsRequestDTO.getGoodsId(), seoulGoodsRequestDTO);
 
         return CommonResponse.of("스케줄러에 기념품판매소 추가 성공", null);
     }

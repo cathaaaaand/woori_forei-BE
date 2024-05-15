@@ -37,48 +37,52 @@ public class SchedulerController {
                 .body(CommonResponse.of("스케줄러 생성 성공", schedulerResponse));
     }
 
-
     @GetMapping("/{schedulerId}")
     public ResponseEntity<CommonResponse<SchedulerResponseDTO>> getScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId) {
 
-        SchedulerResponseDTO scheduler = schedulerService.getSchedulerById(schedulerId);
+        SchedulerResponseDTO scheduler = schedulerService.getSchedulerById(userDetails, schedulerId);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 단일 조회 성공", scheduler));
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<SchedulerResponseDTO>>> getAllSchedulers() {
-        List<SchedulerResponseDTO> schedulers = schedulerService.getAllSchedulers();
+    public ResponseEntity<CommonResponse<List<SchedulerResponseDTO>>> getAllSchedulers(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<SchedulerResponseDTO> schedulers = schedulerService.getAllSchedulers(userDetails);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 전체 조회 성공", schedulers));
     }
 
     @PutMapping("/{schedulerId}")
     public ResponseEntity<CommonResponse<SchedulerResponseDTO>> updateScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody @Valid SchedulerRequestDTO schedulerRequestDTO) {
 
-        SchedulerResponseDTO updatedScheduler = schedulerService.updateScheduler(schedulerId, schedulerRequestDTO);
+        SchedulerResponseDTO updatedScheduler = schedulerService.updateScheduler(userDetails, schedulerId, schedulerRequestDTO);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 수정 성공", updatedScheduler));
     }
 
     @DeleteMapping("/{schedulerId}")
     public ResponseEntity<CommonResponse<Void>> deleteScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId) {
 
-        schedulerService.deleteScheduler(schedulerId);
+        schedulerService.deleteScheduler(userDetails, schedulerId);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러 삭제 성공", null));
     }
 
     @PostMapping("/{schedulerId}/activities")
     public ResponseEntity<CommonResponse<Void>> addActivityToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody @Valid SchedulerActivityRequestDTO activityDTO) {
 
-        schedulerService.addActivityToScheduler(schedulerId, activityDTO);
+        schedulerService.addActivityToScheduler(userDetails, schedulerId, activityDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러에 문화체험 추가 성공", null));
@@ -86,10 +90,11 @@ public class SchedulerController {
 
     @PostMapping("/{schedulerId}/hotels")
     public ResponseEntity<CommonResponse<Void>> addHotelToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody @Valid SchedulerHotelRequestDTO hotelDTO) {
 
-        schedulerService.addHotelToScheduler(schedulerId, hotelDTO);
+        schedulerService.addHotelToScheduler(userDetails, schedulerId, hotelDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러에 호텔 추가 성공", null));
@@ -97,20 +102,22 @@ public class SchedulerController {
 
     @PostMapping("/{schedulerId}/information")
     public ResponseEntity<CommonResponse<Void>> addInformationToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody SchedulerInformationRequestDTO informationDTO) {
 
-        schedulerService.addInformationToScheduler(schedulerId, informationDTO);
+        schedulerService.addInformationToScheduler(userDetails, schedulerId, informationDTO);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러에 안내소 추가 성공", null));
     }
 
     @PostMapping("/{schedulerId}/landmarks")
     public ResponseEntity<CommonResponse<Void>> addLandmarkToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody @Valid SchedulerLandmarkRequestDTO landmarkDTO) {
 
-        schedulerService.addLandmarkToScheduler(schedulerId, landmarkDTO);
+        schedulerService.addLandmarkToScheduler(userDetails, schedulerId, landmarkDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of("스케줄러에 명소 추가 성공", null));
@@ -118,20 +125,22 @@ public class SchedulerController {
 
     @PostMapping("/{schedulerId}/restaurants")
     public ResponseEntity<CommonResponse<Void>> addRestaurantToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody SchedulerRestaurantRequestDTO restaurantDTO) {
 
-        schedulerService.addRestaurantToScheduler(schedulerId, restaurantDTO);
+        schedulerService.addRestaurantToScheduler(userDetails, schedulerId, restaurantDTO);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러에 맛집 추가 성공", null));
     }
 
     @PostMapping("/{schedulerId}/seoul-goods")
     public ResponseEntity<CommonResponse<Void>> addSeoulGoodsToScheduler(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long schedulerId,
             @RequestBody SchedulerSeoulGoodsRequestDTO seoulGoodsDTO) {
 
-        schedulerService.addSeoulGoodsToScheduler(schedulerId, seoulGoodsDTO);
+        schedulerService.addSeoulGoodsToScheduler(userDetails, schedulerId, seoulGoodsDTO);
 
         return ResponseEntity.ok(CommonResponse.of("스케줄러에 기념품판매소 추가 성공", null));
     }
