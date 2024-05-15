@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +46,11 @@ public class SchedulerService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private LocalDateTime parseStringToLocalDateTime(String dateTime) {
-        return LocalDateTime.parse(dateTime, formatter);
+        try {
+            return LocalDateTime.parse(dateTime, formatter);
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
+        }
     }
 
     private String formatLocalDateTime(LocalDateTime dateTime) {
