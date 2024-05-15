@@ -5,7 +5,6 @@ import dnaaaaahtac.wooriforei.domain.auth.service.AuthService;
 import dnaaaaahtac.wooriforei.domain.auth.service.EmailVerificationService;
 import dnaaaaahtac.wooriforei.global.Jwt.JwtUtil;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +59,8 @@ public class AuthController {
 
 
         response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
+
+        loginResponseDTO.setJwtToken(jwtToken);
 
         return ResponseEntity.ok()
                 .body(CommonResponse.of("로그인 성공", loginResponseDTO));

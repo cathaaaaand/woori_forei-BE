@@ -9,7 +9,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,24 +49,12 @@ public class JwtUtil {
     }*/
 
     public String resolveToken(HttpServletRequest request) {
-        // 헤더에서 토큰 검색
         String token = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(token)) {
             return token; // 접두어 없이 토큰만 반환
         }
-
-        // 헤더에 토큰이 없으면 쿠키에서 토큰 검색
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-                    token = cookie.getValue();
-                }
-            }
-        }
-        return token;
+        return null;
     }
-
 
     public boolean validationToken(String token) {
         try {

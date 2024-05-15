@@ -28,4 +28,10 @@ public class LoginResponseDTO {
     private Boolean isAdmin;
 
     private Boolean isAgreed;
+
+    private String jwtToken;
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
+    }
 }
