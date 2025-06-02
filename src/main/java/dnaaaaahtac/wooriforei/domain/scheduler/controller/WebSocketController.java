@@ -1,6 +1,7 @@
 package dnaaaaahtac.wooriforei.domain.scheduler.controller;
 
 import dnaaaaahtac.wooriforei.domain.scheduler.dto.*;
+import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerPresenceService;
 import dnaaaaahtac.wooriforei.domain.scheduler.service.SchedulerService;
 import dnaaaaahtac.wooriforei.global.common.CommonResponse;
 import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
@@ -8,23 +9,28 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class WebSocketController {
 
     private final SchedulerService schedulerService;
+    private final SchedulerPresenceService presenceService;
 
     @MessageMapping("/scheduler/addMember")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> addMemberToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId, String userEmail) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId, String userEmail) {
 
         SchedulerResponseDTO updatedScheduler = schedulerService.addMemberToScheduler(userDetails, schedulerId, userEmail);
 
@@ -33,22 +39,22 @@ public class WebSocketController {
 
     @PostMapping("/create-scheduler")
     public ResponseEntity<CommonResponse<SchedulerResponseDTO>> createScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid SchedulerRequestDTO schedulerRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody @Valid SchedulerRequestDTO schedulerRequestDTO) {
 
         SchedulerResponseDTO schedulerResponse = schedulerService.createScheduler(userDetails, schedulerRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonResponse.of("스케줄러 생성 성공", schedulerResponse));
+                             .body(CommonResponse.of("스케줄러 생성 성공", schedulerResponse));
     }
 
     @MessageMapping("/scheduler/update")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> updateScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRequestDTO schedulerRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRequestDTO schedulerRequestDTO) {
 
         SchedulerResponseDTO updatedScheduler
-                = schedulerService.updateScheduler(userDetails, schedulerRequestDTO.getSchedulerId(), schedulerRequestDTO);
+            = schedulerService.updateScheduler(userDetails, schedulerRequestDTO.getSchedulerId(), schedulerRequestDTO);
 
         return CommonResponse.of("스케줄러 수정 성공", updatedScheduler);
     }
@@ -56,7 +62,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/delete")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> deleteScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
 
         schedulerService.deleteScheduler(userDetails, schedulerId);
 
@@ -66,7 +72,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/get")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<SchedulerResponseDTO> getScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, Long schedulerId) {
 
         SchedulerResponseDTO scheduler = schedulerService.getSchedulerById(userDetails, schedulerId);
 
@@ -76,7 +82,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addActivity")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addActivityToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerActivityRequestDTO activityRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerActivityRequestDTO activityRequestDTO) {
 
         schedulerService.addActivityToScheduler(userDetails, activityRequestDTO.getActivityId(), activityRequestDTO);
 
@@ -86,7 +92,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addHotel")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addHotelToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerHotelRequestDTO hotelRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerHotelRequestDTO hotelRequestDTO) {
 
         schedulerService.addHotelToScheduler(userDetails, hotelRequestDTO.getHotelId(), hotelRequestDTO);
 
@@ -96,7 +102,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addInformation")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addInformationToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerInformationRequestDTO informationRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerInformationRequestDTO informationRequestDTO) {
 
         schedulerService.addInformationToScheduler(userDetails, informationRequestDTO.getInformationId(), informationRequestDTO);
 
@@ -106,7 +112,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addLandmark")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addLandmarkToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerLandmarkRequestDTO landmarkRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerLandmarkRequestDTO landmarkRequestDTO) {
 
         schedulerService.addLandmarkToScheduler(userDetails, landmarkRequestDTO.getLandmarkId(), landmarkRequestDTO);
 
@@ -116,7 +122,7 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addRestaurant")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addRestaurantToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRestaurantRequestDTO restaurantRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerRestaurantRequestDTO restaurantRequestDTO) {
 
         schedulerService.addRestaurantToScheduler(userDetails, restaurantRequestDTO.getRestaurantId(), restaurantRequestDTO);
 
@@ -126,10 +132,51 @@ public class WebSocketController {
     @MessageMapping("/scheduler/addSeoulGoods")
     @SendTo("/topic/schedulerResponse")
     public CommonResponse<Void> addSeoulGoodsToScheduler(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerSeoulGoodsRequestDTO seoulGoodsRequestDTO) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails, SchedulerSeoulGoodsRequestDTO seoulGoodsRequestDTO) {
 
         schedulerService.addSeoulGoodsToScheduler(userDetails, seoulGoodsRequestDTO.getGoodsId(), seoulGoodsRequestDTO);
 
         return CommonResponse.of("스케줄러에 기념품판매소 추가 성공", null);
+    }
+
+    @MessageMapping("/scheduler/{schedulerId}/join")
+    @SendTo("/topic/scheduler/{schedulerId}/presence")
+    public CommonResponse<Map<String, Object>> joinScheduler(
+        @DestinationVariable Long schedulerId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        presenceService.userJoinScheduler(schedulerId, userDetails.getUserId());
+
+        return CommonResponse.of("사용자 접속",
+            Map.of("userId", userDetails.getUserId(),
+                "userName", userDetails.getUser().getNickname(),
+                "action", "joined"));
+    }
+
+    @MessageMapping("/scheduler/{schedulerId}/leave")
+    @SendTo("/topic/scheduler/{schedulerId}/presence")
+    public CommonResponse<Map<String, Object>> leaveScheduler(
+        @DestinationVariable Long schedulerId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        presenceService.userLeaveScheduler(schedulerId, userDetails.getUserId());
+
+        return CommonResponse.of("사용자 퇴장",
+            Map.of("userId", userDetails.getUserId(),
+                "action", "left"));
+    }
+
+    @MessageMapping("/scheduler/{schedulerId}/cursor")
+    @SendTo("/topic/scheduler/{schedulerId}/cursors")
+    public Map<String, Object> updateCursor(@DestinationVariable Long schedulerId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @Payload Map<String, Object> cursorData) {
+        return Map.of(
+            "userId", userDetails.getUserId(),
+            "userName", userDetails.getUser().getNickname(),
+            "selectedItem", cursorData.get("selectedItem"),
+            "action", cursorData.get("action"),
+            "timestamp", java.time.LocalDateTime.now()
+        );
     }
 }
