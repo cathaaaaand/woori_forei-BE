@@ -13,6 +13,7 @@ import dnaaaaahtac.wooriforei.global.exception.ErrorCode;
 import dnaaaaahtac.wooriforei.global.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,7 @@ public class SchedulerService {
     private final SchedulerRestaurantRepository schedulerRestaurantRepository;
     private final SeoulGoodsRepository seoulGoodsRepository;
     private final SchedulerSeoulGoodsRepository schedulerSeoulGoodsRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -79,7 +82,7 @@ public class SchedulerService {
         Scheduler savedScheduler = schedulerRepository.save(scheduler);
 
         User creator = userRepository.findById(userDetails.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+                                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
         SchedulerMember creatorMember = new SchedulerMember(savedScheduler, creator);
         schedulerMemberRepository.save(creatorMember);
 
@@ -94,8 +97,8 @@ public class SchedulerService {
         });
 
         List<UserDetailResponseDTO> memberDetails = users.stream()
-                .map(user -> new UserDetailResponseDTO(user.getUserId(), user.getUsername(), user.getNickname(), user.getEmail()))
-                .collect(Collectors.toList());
+                                                         .map(user -> new UserDetailResponseDTO(user.getUserId(), user.getUsername(), user.getNickname(), user.getEmail()))
+                                                         .collect(Collectors.toList());
 
         return getSchedulerResponseDTO(savedScheduler, memberDetails);
     }
@@ -104,16 +107,16 @@ public class SchedulerService {
     public SchedulerResponseDTO getSchedulerById(UserDetailsImpl userDetails, Long schedulerId) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler_SchedulerId(schedulerId)
-                .stream()
-                .map(member -> new UserDetailResponseDTO(
-                        member.getUser().getUserId(),
-                        member.getUser().getUsername(),
-                        member.getUser().getNickname(),
-                        member.getUser().getEmail()))
-                .collect(Collectors.toList());
+                                                                             .stream()
+                                                                             .map(member -> new UserDetailResponseDTO(
+                                                                                 member.getUser().getUserId(),
+                                                                                 member.getUser().getUsername(),
+                                                                                 member.getUser().getNickname(),
+                                                                                 member.getUser().getEmail()))
+                                                                             .collect(Collectors.toList());
 
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
@@ -124,33 +127,33 @@ public class SchedulerService {
 
         List<SchedulerActivity> activities = schedulerActivityRepository.findByScheduler(scheduler);
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = new ArrayList<>(activities.stream()
-                .map(this::convertActivityToOpenAPIDetails)
-                .toList());
+                                                                                          .map(this::convertActivityToOpenAPIDetails)
+                                                                                          .toList());
 
         List<SchedulerHotel> hotels = schedulerHotelRepository.findByScheduler(scheduler);
         openAPIs.addAll(hotels.stream()
-                .map(this::convertHotelToOpenAPIDetails)
-                .toList());
+                              .map(this::convertHotelToOpenAPIDetails)
+                              .toList());
 
         List<SchedulerInformation> informations = schedulerInformationRepository.findByScheduler(scheduler);
         openAPIs.addAll(informations.stream()
-                .map(this::convertInformationToOpenAPIDetails)
-                .toList());
+                                    .map(this::convertInformationToOpenAPIDetails)
+                                    .toList());
 
         List<SchedulerLandmark> landmarks = schedulerLandmarkRepository.findByScheduler(scheduler);
         openAPIs.addAll(landmarks.stream()
-                .map(this::convertLandmarkToOpenAPIDetails)
-                .toList());
+                                 .map(this::convertLandmarkToOpenAPIDetails)
+                                 .toList());
 
         List<SchedulerRestaurant> restaurants = schedulerRestaurantRepository.findByScheduler(scheduler);
         openAPIs.addAll(restaurants.stream()
-                .map(this::convertRestaurantToOpenAPIDetails)
-                .toList());
+                                   .map(this::convertRestaurantToOpenAPIDetails)
+                                   .toList());
 
         List<SchedulerSeoulGoods> seoulGoodsList = schedulerSeoulGoodsRepository.findByScheduler(scheduler);
         openAPIs.addAll(seoulGoodsList.stream()
-                .map(this::convertSeoulGoodsToOpenAPIDetails)
-                .toList());
+                                      .map(this::convertSeoulGoodsToOpenAPIDetails)
+                                      .toList());
 
         return openAPIs;
     }
@@ -158,73 +161,73 @@ public class SchedulerService {
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertActivityToOpenAPIDetails(SchedulerActivity activity) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                activity.getActivity().getActivityId(),
-                activity.getActivity().getSvcnm(),
-                formatLocalDateTime(activity.getVisitStart()),
-                formatLocalDateTime(activity.getVisitEnd()),
-                "activity"
+            activity.getActivity().getActivityId(),
+            activity.getActivity().getSvcnm(),
+            formatLocalDateTime(activity.getVisitStart()),
+            formatLocalDateTime(activity.getVisitEnd()),
+            "activity"
         );
     }
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertHotelToOpenAPIDetails(SchedulerHotel hotel) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                hotel.getHotel().getHotelId(),
-                hotel.getHotel().getNameKor(),
-                formatLocalDateTime(hotel.getStayStart()),
-                formatLocalDateTime(hotel.getStayEnd()),
-                "hotel"
+            hotel.getHotel().getHotelId(),
+            hotel.getHotel().getNameKor(),
+            formatLocalDateTime(hotel.getStayStart()),
+            formatLocalDateTime(hotel.getStayEnd()),
+            "hotel"
         );
     }
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertInformationToOpenAPIDetails(SchedulerInformation information) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                information.getInformation().getInformationId(),
-                information.getInformation().getTrsmicnm(),
-                formatLocalDateTime(information.getVisitStart()),
-                formatLocalDateTime(information.getVisitEnd()),
-                "information"
+            information.getInformation().getInformationId(),
+            information.getInformation().getTrsmicnm(),
+            formatLocalDateTime(information.getVisitStart()),
+            formatLocalDateTime(information.getVisitEnd()),
+            "information"
         );
     }
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertLandmarkToOpenAPIDetails(SchedulerLandmark landmark) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                landmark.getLandmark().getRandmarkId(),
-                landmark.getLandmark().getPostSj(),
-                formatLocalDateTime(landmark.getVisitStart()),
-                formatLocalDateTime(landmark.getVisitEnd()),
-                "landmark"
+            landmark.getLandmark().getRandmarkId(),
+            landmark.getLandmark().getPostSj(),
+            formatLocalDateTime(landmark.getVisitStart()),
+            formatLocalDateTime(landmark.getVisitEnd()),
+            "landmark"
         );
     }
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertRestaurantToOpenAPIDetails(SchedulerRestaurant restaurant) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                restaurant.getRestaurant().getRestaurantId(),
-                restaurant.getRestaurant().getPostSj(),
-                formatLocalDateTime(restaurant.getVisitStart()),
-                formatLocalDateTime(restaurant.getVisitEnd()),
-                "restaurant"
+            restaurant.getRestaurant().getRestaurantId(),
+            restaurant.getRestaurant().getPostSj(),
+            formatLocalDateTime(restaurant.getVisitStart()),
+            formatLocalDateTime(restaurant.getVisitEnd()),
+            "restaurant"
         );
     }
 
     private SchedulerResponseDTO.OpenAPIDetailsDTO convertSeoulGoodsToOpenAPIDetails(SchedulerSeoulGoods seoulGoods) {
 
         return new SchedulerResponseDTO.OpenAPIDetailsDTO(
-                seoulGoods.getSeoulGoods().getSeoulGoodsId(),
-                seoulGoods.getSeoulGoods().getNm(),
-                formatLocalDateTime(seoulGoods.getVisitStart()),
-                formatLocalDateTime(seoulGoods.getVisitEnd()),
-                "seoulGoods"
+            seoulGoods.getSeoulGoods().getSeoulGoodsId(),
+            seoulGoods.getSeoulGoods().getNm(),
+            formatLocalDateTime(seoulGoods.getVisitStart()),
+            formatLocalDateTime(seoulGoods.getVisitEnd()),
+            "seoulGoods"
         );
     }
 
     private SchedulerResponseDTO getSchedulerResponseDTO(
-            Scheduler scheduler,
-            List<UserDetailResponseDTO> memberDetails,
-            List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs) {
+        Scheduler scheduler,
+        List<UserDetailResponseDTO> memberDetails,
+        List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs) {
 
         SchedulerResponseDTO response = new SchedulerResponseDTO();
         response.setSchedulerId(scheduler.getSchedulerId());
@@ -246,13 +249,13 @@ public class SchedulerService {
 
         return schedulers.stream().map(scheduler -> {
             List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler_SchedulerId(scheduler.getSchedulerId())
-                    .stream()
-                    .map(member -> new UserDetailResponseDTO(
-                            member.getUser().getUserId(),
-                            member.getUser().getUsername(),
-                            member.getUser().getNickname(),
-                            member.getUser().getEmail()))
-                    .collect(Collectors.toList());
+                                                                                 .stream()
+                                                                                 .map(member -> new UserDetailResponseDTO(
+                                                                                     member.getUser().getUserId(),
+                                                                                     member.getUser().getUsername(),
+                                                                                     member.getUser().getNickname(),
+                                                                                     member.getUser().getEmail()))
+                                                                                 .collect(Collectors.toList());
 
             List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
@@ -264,7 +267,7 @@ public class SchedulerService {
     public SchedulerResponseDTO updateScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerRequestDTO requestDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime startDate = requestDTO.getStartDate() != null ? parseStringToLocalDateTime(requestDTO.getStartDate()) : null;
         LocalDateTime endDate = requestDTO.getEndDate() != null ? parseStringToLocalDateTime(requestDTO.getEndDate()) : null;
@@ -290,29 +293,29 @@ public class SchedulerService {
         schedulerRepository.save(scheduler);
 
         List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
-                .stream()
-                .map(member -> new UserDetailResponseDTO(
-                        member.getUser().getUserId(),
-                        member.getUser().getUsername(),
-                        member.getUser().getNickname(),
-                        member.getUser().getEmail()))
-                .collect(Collectors.toList());
+                                                                             .stream()
+                                                                             .map(member -> new UserDetailResponseDTO(
+                                                                                 member.getUser().getUserId(),
+                                                                                 member.getUser().getUsername(),
+                                                                                 member.getUser().getNickname(),
+                                                                                 member.getUser().getEmail()))
+                                                                             .collect(Collectors.toList());
 
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
         return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
     }
 
-    private SchedulerResponseDTO getSchedulerResponseDTO(Scheduler scheduler) {
+    private void getSchedulerResponseDTO(Scheduler scheduler) {
 
         List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
-                .stream()
-                .map(member -> new UserDetailResponseDTO(
-                        member.getUser().getUserId(),
-                        member.getUser().getUsername(),
-                        member.getUser().getNickname(),
-                        member.getUser().getEmail()))
-                .collect(Collectors.toList());
+                                                                             .stream()
+                                                                             .map(member -> new UserDetailResponseDTO(
+                                                                                 member.getUser().getUserId(),
+                                                                                 member.getUser().getUsername(),
+                                                                                 member.getUser().getNickname(),
+                                                                                 member.getUser().getEmail()))
+                                                                             .collect(Collectors.toList());
 
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
@@ -326,7 +329,6 @@ public class SchedulerService {
         response.setMembers(memberDetails);
         response.setOpenAPIs(openAPIs);
 
-        return response;
     }
 
     private void updateSchedulerMembers(Scheduler scheduler, List<String> memberEmails) {
@@ -335,20 +337,20 @@ public class SchedulerService {
 
         List<SchedulerMember> existingMembers = schedulerMemberRepository.findByScheduler(scheduler);
         List<String> existingEmails = existingMembers.stream()
-                .map(member -> member.getUser().getEmail())
-                .toList();
+                                                     .map(member -> member.getUser().getEmail())
+                                                     .toList();
 
         memberEmails.forEach(email -> {
             if (!existingEmails.contains(email)) {
                 User user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+                                          .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
                 schedulerMemberRepository.save(new SchedulerMember(scheduler, user));
             }
         });
 
         existingMembers.stream()
-                .filter(member -> !memberEmails.contains(member.getUser().getEmail()))
-                .forEach(schedulerMemberRepository::delete);
+                       .filter(member -> !memberEmails.contains(member.getUser().getEmail()))
+                       .forEach(schedulerMemberRepository::delete);
     }
 
     private SchedulerResponseDTO getSchedulerResponseDTO(Scheduler scheduler, List<UserDetailResponseDTO> memberDetails) {
@@ -369,7 +371,7 @@ public class SchedulerService {
     public void deleteScheduler(UserDetailsImpl userDetails, Long schedulerId) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         schedulerMemberRepository.deleteAllByScheduler(scheduler);
         schedulerRepository.delete(scheduler);
@@ -379,10 +381,10 @@ public class SchedulerService {
     public void addActivityToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerActivityRequestDTO activityDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         Activity activity = activityRepository.findById(activityDTO.getActivityId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
+                                              .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ACTIVITY));
 
         LocalDateTime visitStart = parseStringToLocalDateTime(activityDTO.getVisitStart());
         LocalDateTime visitEnd = parseStringToLocalDateTime(activityDTO.getVisitEnd());
@@ -398,7 +400,7 @@ public class SchedulerService {
         }
 
         SchedulerActivity schedulerActivity = new SchedulerActivity(
-                scheduler, activity, visitStart, visitEnd);
+            scheduler, activity, visitStart, visitEnd);
         schedulerActivityRepository.save(schedulerActivity);
 
         getSchedulerResponseDTO(scheduler);
@@ -408,7 +410,7 @@ public class SchedulerService {
     public void addHotelToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerHotelRequestDTO hotelDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime stayStart = parseStringToLocalDateTime(hotelDTO.getStayStart());
         LocalDateTime stayEnd = parseStringToLocalDateTime(hotelDTO.getStayEnd());
@@ -416,7 +418,7 @@ public class SchedulerService {
         checkForTimeConflicts(scheduler, stayStart, stayEnd, hotelDTO.getHotelId());
 
         Hotel hotel = hotelRepository.findById(hotelDTO.getHotelId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_HOTEL));
+                                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_HOTEL));
 
         SchedulerHotel schedulerHotel = new SchedulerHotel(scheduler, hotel, stayStart, stayEnd);
         schedulerHotelRepository.save(schedulerHotel);
@@ -426,7 +428,7 @@ public class SchedulerService {
     public void addInformationToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerInformationRequestDTO informationDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime visitStart = parseStringToLocalDateTime(informationDTO.getVisitStart());
         LocalDateTime visitEnd = parseStringToLocalDateTime(informationDTO.getVisitEnd());
@@ -434,43 +436,72 @@ public class SchedulerService {
         checkForTimeConflicts(scheduler, visitStart, visitEnd, informationDTO.getInformationId());
 
         Information information = informationRepository.findById(informationDTO.getInformationId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INFORMATION));
+                                                       .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INFORMATION));
 
         SchedulerInformation schedulerInformation = new SchedulerInformation(
-                scheduler,
-                information,
-                visitStart,
-                visitEnd);
+            scheduler,
+            information,
+            visitStart,
+            visitEnd);
 
         schedulerInformationRepository.save(schedulerInformation);
     }
 
     @Transactional
-    public void addLandmarkToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerLandmarkRequestDTO landmarkDTO) {
+    protected void broadcastSchedulerUpdate(Long schedulerId, String action, Object data) {
+        messagingTemplate.convertAndSend("/topic/scheduler/" + schedulerId,
+            Map.of("action", action, "data", data, "timestamp", LocalDateTime.now()));
+    }
 
+
+    @Transactional
+    public synchronized void addLandmarkToScheduler(UserDetailsImpl userDetails, Long schedulerId,
+                                                    SchedulerLandmarkRequestDTO landmarkDTO) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime visitStart = parseStringToLocalDateTime(landmarkDTO.getVisitStart());
         LocalDateTime visitEnd = parseStringToLocalDateTime(landmarkDTO.getVisitEnd());
 
-        checkForTimeConflicts(scheduler, visitStart, visitEnd, landmarkDTO.getLandmarkId());
+        // 시작 알림
+        broadcastSchedulerUpdate(schedulerId, "landmark_adding",
+            Map.of("userId", userDetails.getUserId(), "landmarkId", landmarkDTO.getLandmarkId()));
+
+        // 실시간 충돌 체크 및 알림
+        if (checkForTimeConflicts(scheduler, visitStart, visitEnd, landmarkDTO.getLandmarkId())) {
+            // 충돌 알림 브로드캐스트
+            messagingTemplate.convertAndSend("/topic/scheduler/" + schedulerId + "/conflict",
+                Map.of("conflictType", "time_overlap",
+                    "userId", userDetails.getUserId(),
+                    "timeRange", Map.of("start", visitStart, "end", visitEnd)));
+            throw new CustomException(ErrorCode.INVALID_TIME_OVERLAP);
+        }
+
+        if (visitStart.isBefore(scheduler.getStartDate())) {
+            throw new CustomException(ErrorCode.INVALID_START_DATE);
+        }
+
+        if (visitEnd.isAfter(scheduler.getEndDate())) {
+            throw new CustomException(ErrorCode.INVALID_END_DATE);
+        }
 
         Landmark landmark = landmarkRepository.findById(landmarkDTO.getLandmarkId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_LANDMARK));
+                                              .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_LANDMARK));
 
         SchedulerLandmark schedulerLandmark = new SchedulerLandmark(
-                scheduler, landmark,
-                visitStart, visitEnd);
+            scheduler, landmark, visitStart, visitEnd);
 
         schedulerLandmarkRepository.save(schedulerLandmark);
+
+        // 완료 알림
+        broadcastSchedulerUpdate(schedulerId, "landmark_added", schedulerLandmark);
     }
 
     @Transactional
     public void addRestaurantToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerRestaurantRequestDTO restaurantDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime visitStart = parseStringToLocalDateTime(restaurantDTO.getVisitStart());
         LocalDateTime visitEnd = parseStringToLocalDateTime(restaurantDTO.getVisitEnd());
@@ -478,13 +509,13 @@ public class SchedulerService {
         checkForTimeConflicts(scheduler, visitStart, visitEnd, restaurantDTO.getRestaurantId());
 
         Restaurant restaurant = restaurantRepository.findById(restaurantDTO.getRestaurantId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESTAURANT));
+                                                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESTAURANT));
 
         SchedulerRestaurant schedulerRestaurant = new SchedulerRestaurant(
-                scheduler,
-                restaurant,
-                visitStart,
-                visitEnd);
+            scheduler,
+            restaurant,
+            visitStart,
+            visitEnd);
 
         schedulerRestaurantRepository.save(schedulerRestaurant);
     }
@@ -493,7 +524,7 @@ public class SchedulerService {
     public void addSeoulGoodsToScheduler(UserDetailsImpl userDetails, Long schedulerId, SchedulerSeoulGoodsRequestDTO seoulGoodsDTO) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         LocalDateTime visitStart = parseStringToLocalDateTime(seoulGoodsDTO.getVisitStart());
         LocalDateTime visitEnd = parseStringToLocalDateTime(seoulGoodsDTO.getVisitEnd());
@@ -501,13 +532,13 @@ public class SchedulerService {
         checkForTimeConflicts(scheduler, visitStart, visitEnd, seoulGoodsDTO.getGoodsId());
 
         SeoulGoods seoulGoods = seoulGoodsRepository.findById(seoulGoodsDTO.getGoodsId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SEOUL_GOODS));
+                                                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SEOUL_GOODS));
 
         SchedulerSeoulGoods schedulerSeoulGoods = new SchedulerSeoulGoods(
-                scheduler,
-                seoulGoods,
-                visitStart,
-                visitEnd);
+            scheduler,
+            seoulGoods,
+            visitStart,
+            visitEnd);
 
         schedulerSeoulGoodsRepository.save(schedulerSeoulGoods);
     }
@@ -516,36 +547,37 @@ public class SchedulerService {
     public SchedulerResponseDTO addMemberToScheduler(UserDetailsImpl userDetails, Long schedulerId, String userEmail) {
 
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
+                                                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SCHEDULER));
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+                                  .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
         SchedulerMember member = new SchedulerMember(scheduler, user);
         schedulerMemberRepository.save(member);
 
         List<UserDetailResponseDTO> memberDetails = schedulerMemberRepository.findByScheduler(scheduler)
-                .stream()
-                .map(mem -> new UserDetailResponseDTO(
-                        mem.getUser().getUserId(),
-                        mem.getUser().getUsername(),
-                        mem.getUser().getNickname(),
-                        mem.getUser().getEmail()))
-                .collect(Collectors.toList());
+                                                                             .stream()
+                                                                             .map(mem -> new UserDetailResponseDTO(
+                                                                                 mem.getUser().getUserId(),
+                                                                                 mem.getUser().getUsername(),
+                                                                                 mem.getUser().getNickname(),
+                                                                                 mem.getUser().getEmail()))
+                                                                             .collect(Collectors.toList());
 
         List<SchedulerResponseDTO.OpenAPIDetailsDTO> openAPIs = collectOpenAPIDetails(scheduler);
 
         return getSchedulerResponseDTO(scheduler, memberDetails, openAPIs);
     }
 
-    private void checkForTimeConflicts(Scheduler scheduler, LocalDateTime start, LocalDateTime end, Long entityId) {
+    private boolean checkForTimeConflicts(Scheduler scheduler, LocalDateTime start, LocalDateTime end, Long entityId) {
 
         boolean hasConflict = scheduler.getEvents().stream()
-                .anyMatch(event -> !Objects.equals(event.getEventId(), entityId) &&
-                        event.getStartTime().isBefore(end) &&
-                        event.getEndTime().isAfter(start));
+                                       .anyMatch(event -> !Objects.equals(event.getEventId(), entityId) &&
+                                           event.getStartTime().isBefore(end) &&
+                                           event.getEndTime().isAfter(start));
         if (hasConflict) {
             throw new CustomException(ErrorCode.INVALID_TIME_OVERLAP);
         }
+        return hasConflict;
     }
 }
